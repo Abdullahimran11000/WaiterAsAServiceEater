@@ -1,0 +1,21 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/FreeSans.ttf",
+      "sha1": "0a04aaf46d00afeb573b9662781c6e1aa4c47a87"
+    },
+    {
+      "path": "assets/fonts/FreeSansBold.ttf",
+      "sha1": "f299d55c4784f644104eb6b0640538b6f3325db5"
+    },
+    {
+      "path": "assets/fonts/FreeSansBoldOblique.ttf",
+      "sha1": "f2ad9c36dfe180925cd30fadd88d0c24cfb6b2f6"
+    },
+    {
+      "path": "assets/fonts/FreeSansOblique.ttf",
+      "sha1": "1fbf05365dc3c28a817c0f6748759fc79411b316"
+    }
+  ]
+}

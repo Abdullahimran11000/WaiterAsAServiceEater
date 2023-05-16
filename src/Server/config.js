@@ -1,9 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ROOT_URL = 'https://phpstack-920157-3477458.cloudwaysapps.com/';
-
-// const ROOT_URL = `http://192.168.1.16:4000`;
+const ROOT_URL = 'https://phpstack-920157-3520511.cloudwaysapps.com/';
 
 const client = axios.create({
   baseURL: ROOT_URL,
@@ -24,10 +22,7 @@ const clientMultiPart = axios.create({
 client.interceptors.request.use(
   async config => {
     config.timeout = 60000;
-    // config.headers = {
-    //   Accept: 'application/json',
-    //   'Content-Type': 'application/json',
-    // };
+
     const requestConfig = config;
     let cloudIp = await AsyncStorage.getItem('cloudIp');
     requestConfig.baseURL = cloudIp != null ? cloudIp : ROOT_URL;
