@@ -2,27 +2,28 @@ import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
+  Modal,
   TextInput,
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Modal,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {showMessage} from 'react-native-flash-message';
 import {ManagerLogin} from '../Server/Methods/Listing';
 
+import Toast from 'react-native-simple-toast';
 import FastImage from 'react-native-fast-image';
+import {getUniqueId} from 'react-native-device-info';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Foundation from 'react-native-vector-icons/Foundation';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Toast from 'react-native-simple-toast';
-import Colors from '../Assets/Colors';
+
 import axios from 'axios';
+import Colors from '../Assets/Colors';
 import {ROOT_URL} from '../Server/config';
 import {getToken} from '../Utils/PNHelper';
-import {getUniqueId} from 'react-native-device-info';
 
 const iconSize = 30;
 
@@ -124,14 +125,15 @@ const Login = ({navigation}) => {
       axios
         .get(`http://${url}/test_connection`)
         .then(async res => {
-          console.log('updateServer res:', res);
-          if (res.status >= 200 && res.status <= 499) {
+          if (res?.status >= 200 && res?.status <= 299) {
             await AsyncStorage.clear();
-            Toast.show(res.data);
+            Toast.show(res?.data, Toast.SHORT);
+
             dispatch({
               type: 'SET_CLOUD_IP',
               payload: `http://${url}`,
             });
+
             AsyncStorage.setItem('cloudIp', `http://${url}`);
 
             let unique_id = await getUniqueId();
