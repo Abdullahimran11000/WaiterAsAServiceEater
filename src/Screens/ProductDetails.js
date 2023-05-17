@@ -24,7 +24,6 @@ import {WINDOW_WIDTH} from '../Utils/Size';
 import {getTablesList} from '../Regex/SessionCheck';
 import {callWaiter, paymentRequest} from '../Server/Methods/Listing';
 import {SocketContext} from '../Context/SocketContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CountDown from 'react-native-countdown-component';
 
 const ProductDetails = ({navigation, route}) => {
@@ -280,7 +279,7 @@ const ProductDetails = ({navigation, route}) => {
         price:
           calculateTaxPercentOfPrice(value.new_price, itemTax) +
           value.new_price,
-        percentage_tax: menu.item_tax,
+        percentage_tax: itemTax,
         calculated_tax: calculateTaxPercentOfPrice(value.new_price, itemTax),
       };
 

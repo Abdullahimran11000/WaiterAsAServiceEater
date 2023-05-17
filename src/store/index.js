@@ -18,6 +18,7 @@ const persistConfig = {
   whitelist: ['cartReducer', 'sessionReducer'],
   keyPrefix: appName,
   storage: AsyncStorage,
+  timeout: 10000,
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
