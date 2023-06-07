@@ -25,6 +25,8 @@ import {getTablesList} from '../Regex/SessionCheck';
 import {callWaiter, paymentRequest} from '../Server/Methods/Listing';
 import {SocketContext} from '../Context/SocketContext';
 import CountDown from 'react-native-countdown-component';
+import Icon from 'react-native-vector-icons/AntDesign';
+import Swiper from 'react-native-swiper';
 
 const ProductDetails = ({navigation, route}) => {
   const dispatch = useDispatch();
@@ -55,6 +57,7 @@ const ProductDetails = ({navigation, route}) => {
     MenuAllergyItems,
     menu_tax,
     menu_type,
+    MenuMedia,
   } = product;
 
   const [flag, setFlag] = useState(false);
@@ -706,13 +709,38 @@ const ProductDetails = ({navigation, route}) => {
         contentContainerStyle={{flexGrow: 1}}
         showsVerticalScrollIndicator={false}>
         <View style={styles.productInfoContainer}>
-          <View style={styles.productImageContainer}>
-            <FastImage
-              source={{uri: baseURL + '/restaurant_data/' + menu_photo}}
-              style={styles.productImage}
-              resizeMode="stretch"
-            />
-          </View>
+          {MenuMedia.length == 0 ? (
+            <View style={styles.productImageContainer}>
+              <FastImage
+                source={{uri: baseURL + '/restaurant_data/' + menu_photo}}
+                style={styles.productImage}
+                resizeMode="stretch"
+              />
+            </View>
+          ) : (
+            <Swiper
+              style={{height: WINDOW_WIDTH < 420 ? 125 : 220}}
+              showsButtons={true}
+              showsPagination={false}
+              autoplay={true}
+              nextButton={<Icon name="caretright" size={24} color={'white'} />}
+              prevButton={<Icon name="caretleft" size={24} color={'white'} />}>
+              {MenuMedia.map((item, index) => {
+                return (
+                  <View style={styles.productImageContainer}>
+                    <FastImage
+                      key={index}
+                      source={{
+                        uri: baseURL + '/restaurant_data/' + item.menu_photo,
+                      }}
+                      style={styles.productImage}
+                      resizeMode="stretch"
+                    />
+                  </View>
+                );
+              })}
+            </Swiper>
+          )}
 
           <View style={styles.productDescriptionContainer}>
             <View style={styles.productNameContainer}>
@@ -723,7 +751,7 @@ const ProductDetails = ({navigation, route}) => {
                 ]}>
                 {menu_name.replaceAll('�', '')}
               </Text>
-              <Text
+              {/* <Text
                 style={[
                   styles.productNameText,
                   {color: layout_setting?.h2_text_color},
@@ -732,7 +760,7 @@ const ProductDetails = ({navigation, route}) => {
                 {displayPrice.length == 0
                   ? menu_price.toFixed(decimal_places)
                   : newPrice.toFixed(decimal_places)}
-              </Text>
+              </Text> */}
             </View>
 
             <Text style={styles.productDescription}>
@@ -830,6 +858,18 @@ const ProductDetails = ({navigation, route}) => {
           onPress={handleAddToCart}>
           <Text style={styles.orderBtnText}>ADD TO ORDER</Text>
         </TouchableOpacity>
+        <View>
+          <Text
+            style={[
+              styles.productNameText,
+              {color: layout_setting?.h2_text_color},
+            ]}>
+            €{' '}
+            {displayPrice.length == 0
+              ? menu_price.toFixed(decimal_places)
+              : newPrice.toFixed(decimal_places)}
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -895,22 +935,23 @@ const styles = StyleSheet.create({
   cartCounter: {fontSize: 14, color: Colors.primary, fontWeight: 'bold'},
 
   productInfoContainer: {
-    width: '80%',
+    width: '90%',
     marginVertical: 10,
     alignSelf: 'center',
-    flexDirection: 'row',
   },
 
   productImageContainer: {
     flex: 1,
-    marginRight: 10,
     alignItems: 'center',
   },
 
   productImage: {
-    width: WINDOW_WIDTH < 420 ? 125 : 150,
-    height: WINDOW_WIDTH < 420 ? 125 : 150,
-    borderRadius: 75,
+    width: '100%',
+    height: WINDOW_WIDTH < 420 ? 125 : 220,
+
+    // width: WINDOW_WIDTH < 420 ? 125 : 150,
+    // height: WINDOW_WIDTH < 420 ? 125 : 150,
+    // borderRadius: 75,
   },
 
   productDescriptionContainer: {
@@ -926,7 +967,7 @@ const styles = StyleSheet.create({
   },
 
   productNameText: {
-    fontSize: WINDOW_WIDTH < 420 ? 20 : 22,
+    fontSize: WINDOW_WIDTH < 420 ? 18 : 20,
     color: Colors.black,
     fontWeight: 'bold',
     fontFamily: 'FreeSans',
@@ -1036,7 +1077,7 @@ const styles = StyleSheet.create({
   },
 
   orderBtn: {
-    flex: WINDOW_WIDTH < 420 ? 0.75 : 0.85,
+    flex: WINDOW_WIDTH < 420 ? 0.7 : 0.8,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.primary,
