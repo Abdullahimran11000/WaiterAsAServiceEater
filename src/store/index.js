@@ -15,7 +15,7 @@ import {name as appName} from '../../app.json';
 
 const persistConfig = {
   key: 'root',
-  whitelist: ['cartReducer', 'sessionReducer'],
+  whitelist: ['cartReducer', 'sessionReducer', 'totalReducer'],
   keyPrefix: appName,
   storage: AsyncStorage,
   timeout: 10000,

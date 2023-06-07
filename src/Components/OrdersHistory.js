@@ -20,9 +20,8 @@ const OrdersHistory = ({navigation}) => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
 
-  const {orders, session, user, sessionTotal} = useSelector(
-    store => store.sessionReducer,
-  );
+  const {session, user} = useSelector(store => store.sessionReducer);
+  const {orders, sessionTotal} = useSelector(store => store.totalReducer);
 
   const {layout_setting} = user;
   const basecolor = layout_setting?.basecolor;
@@ -33,6 +32,10 @@ const OrdersHistory = ({navigation}) => {
   const [flag, setFlag] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * The function handles the checkout process by making a payment request and displaying appropriate
+   * messages based on the response.
+   */
   const handleCheckout = () => {
     setIsLoading(true);
 

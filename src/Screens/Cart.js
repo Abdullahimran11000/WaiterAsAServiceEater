@@ -17,10 +17,16 @@ const Cart = ({navigation, route}) => {
   const tabs = ['Current Order', 'Orders History'];
   const [selectedTab, setSelectedTab] = useState(0);
 
+  /**
+   * The function handles the back button press by navigating to the previous screen.
+   */
   const handleBackPress = () => {
     navigation.goBack();
   };
 
+  /**
+   * The function sets the selected tab based on the index passed as a parameter.
+   */
   const handleTabPress = index => setSelectedTab(index);
 
   return (

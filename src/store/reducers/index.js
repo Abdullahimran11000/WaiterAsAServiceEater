@@ -5,6 +5,7 @@ import {sessionReducer} from './Sessions';
 import {timerReducer} from './Timer';
 import {popupReducer} from './Popup';
 import {productReducer} from './Product';
+import {totalReducer} from './Total';
 
 export default combineReducers({
   cartReducer,
@@ -12,4 +13,5 @@ export default combineReducers({
   timerReducer,
   popupReducer,
   productReducer,
+  totalReducer,
 });

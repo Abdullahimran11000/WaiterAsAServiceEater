@@ -46,6 +46,10 @@ const CurrentOrder = ({route, handleBackPress}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
+  /* The above code is using the useEffect hook in React to calculate the subtotal, total amount, and
+  total tax of items in a shopping cart. It is iterating through the cartData array and adding up
+  the item prices and taxes for each item. It also checks for any nested items within each item and
+  adds up their taxes as well. Finally, it sets the calculated values using the useState hook. */
   useEffect(() => {
     let amount = 0;
     let total_tax = totalTax;
@@ -77,6 +81,10 @@ const CurrentOrder = ({route, handleBackPress}) => {
     setTotalTax(total_tax);
   }, []);
 
+  /**
+   * The function handles the removal of an item from a cart and updates the total amount, total tax,
+   * and sub-total amount accordingly.
+   */
   const handleRemoveItemPressed = itemIndex => {
     let n = 0;
 
@@ -130,6 +138,10 @@ const CurrentOrder = ({route, handleBackPress}) => {
     });
   };
 
+  /**
+   * This function handles the increment of quantity and price of an item in a shopping cart using
+   * Redux.
+   */
   const handleReduxIncreament = itemIndex => {
     setDisabled(true);
 
@@ -178,6 +190,10 @@ const CurrentOrder = ({route, handleBackPress}) => {
     setDisabled(false);
   };
 
+  /**
+   * This function handles the decrement of an item's quantity in a shopping cart and updates the total
+   * amount and tax accordingly.
+   */
   const handleReduxDecreament = itemIndex => {
     setDisabled(true);
 
@@ -234,6 +250,10 @@ const CurrentOrder = ({route, handleBackPress}) => {
     setDisabled(false);
   };
 
+  /**
+   * The function handles placing an order by sending a request to the server with the necessary data
+   * and updating the state accordingly.
+   */
   const handlePlaceOrder = () => {
     setIsLoading(true);
     getTablesList(location_id, session.table_id, async res => {
@@ -362,19 +382,19 @@ const CurrentOrder = ({route, handleBackPress}) => {
               order_tax: totalTax,
             };
 
-            // socket.emit('session_ended');
-
             PlaceOrder(location_id, formData)
               .then(res => {
                 const {status, data} = res;
 
-                ToastAndroid.show(
-                  'order_placed socket call',
-                  ToastAndroid.SHORT,
-                );
-
                 socket.emit('order_placed', {
                   order_id: data?.order?.order_id,
+                });
+
+                socket.once('order_placed_status', () => {
+                  ToastAndroid.show(
+                    'order placed successfully',
+                    ToastAndroid.SHORT,
+                  );
                 });
 
                 if (status == 200 || status == 201) {
@@ -452,6 +472,9 @@ const CurrentOrder = ({route, handleBackPress}) => {
     });
   };
 
+  /**
+   * The function sets a new order time and handles a back press.
+   */
   const startTimer = () => {
     dispatch({
       type: 'SET_NEW_ORDER_TIME',
@@ -472,7 +495,6 @@ const CurrentOrder = ({route, handleBackPress}) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{flexGrow: 1}}>
         {cartData?.map((order, index) => {
-          console.log('order: ', order);
           return (
             <View key={index} style={styles.orderContainer}>
               <Pressable

@@ -49,7 +49,10 @@ const StackScreens = () => {
   return (
     <SocketContext.Provider
       value={socket_connection(user_id, role, location_id, token, cloudIp)}>
-      <Stack.Navigator screenOptions={navigationOption()}>
+      <Stack.Navigator
+        initialRouteName="Splash"
+        screenOptions={navigationOption()}>
+        <Stack.Screen name="Splash" component={Splash} />
         <Stack.Screen name="Terms" component={Terms} />
         <Stack.Screen name="Categories" component={Categories} />
         <Stack.Screen name="CategoryProducts" component={CategoryProducts} />

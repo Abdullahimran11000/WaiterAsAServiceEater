@@ -184,9 +184,7 @@ const Login = ({navigation}) => {
         <View style={styles.emailWrapper}>
           <Text style={styles.emailHeadingText}>Email Address</Text>
           <View style={styles.emailContainer}>
-            <View style={styles.iconContainer}>
-              <Icon name="email" size={iconSize} color={Colors.primary} />
-            </View>
+            <Icon name="email" size={iconSize} color={Colors.primary} />
             <TextInput
               value={email}
               autoCapitalize="none"
@@ -201,9 +199,7 @@ const Login = ({navigation}) => {
         <View style={styles.emailWrapper}>
           <Text style={styles.emailHeadingText}>Password</Text>
           <View style={styles.emailContainer}>
-            <View style={styles.iconContainer}>
-              <Foundation name="key" size={iconSize} color={Colors.primary} />
-            </View>
+            <Foundation name="key" size={iconSize} color={Colors.primary} />
             <TextInput
               value={password}
               autoCapitalize="none"
@@ -213,9 +209,7 @@ const Login = ({navigation}) => {
               onChangeText={handlePasswordChange}
               style={[styles.textInputStyle, {width: '86%'}]}
             />
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={handleEyePress}>
+            <TouchableOpacity onPress={handleEyePress}>
               {!showPassword ? (
                 <Entypo name="eye" size={iconSize} color={Colors.primary} />
               ) : (
@@ -380,10 +374,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: Colors.white,
     justifyContent: 'space-between',
-  },
-
-  iconContainer: {
-    width: '7%',
   },
 
   textInputStyle: {

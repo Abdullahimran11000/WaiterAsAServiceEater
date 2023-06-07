@@ -35,6 +35,10 @@ const Categories = ({navigation}) => {
   const [refreshing, setRefreshing] = useState(false);
   const [baseURL, setBaseUrl] = useState('');
 
+  /**
+   * This function sets the base URL for an API endpoint based on a stored IP address or a default
+   * value.
+   */
   const setBaseUrlFunction = async () => {
     let rooturl = 'https://api.tabletordercard.be';
     let cloudIp = await AsyncStorage.getItem('cloudIp');
@@ -42,10 +46,20 @@ const Categories = ({navigation}) => {
 
     setBaseUrl(url);
   };
+
+  /* This is a useEffect hook that is called whenever the value of `baseURL` changes. It calls the
+  `setBaseUrlFunction` function to set the base URL for an API endpoint based on a stored IP address
+  or a default value. If `baseURL` is not an empty string, it calls the `apiCall` function to make
+  an API call to get location categories. */
   useEffect(() => {
     setBaseUrlFunction();
     baseURL === '' ? null : apiCall();
   }, [baseURL]);
+
+  /**
+   * The function makes an API call to retrieve location categories, dish tags, and banners, and sets
+   * them as state variables.
+   */
   const apiCall = async () => {
     if (baseURL === '') {
       setRefreshing(false);
@@ -76,11 +90,30 @@ const Categories = ({navigation}) => {
     }
   };
 
+  /* `const onRefresh` is a function that is created using the `useCallback` hook. It sets the
+  `refreshing` state to `true` and then calls the `apiCall` function to make an API call to retrieve
+  location categories, dish tags, and banners. The `useCallback` hook is used to memoize the
+  function so that it is only recreated if any of its dependencies change. In this case, the
+  function has no dependencies, so it will only be created once. This can help improve performance
+  by reducing unnecessary re-renders. The `onRefresh` function is passed as a prop to the
+  `RefreshControl` component in the `ScrollView` to handle the pull-to-refresh functionality. */
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     apiCall();
   }, []);
 
+  /**
+   * The function handles a category press event and navigates to a screen displaying products within
+   * that category.
+   * @param baseURL - The baseURL parameter is likely a string representing the base URL of an API or
+   * server that the app is communicating with. It could be used to construct URLs for making requests
+   * to the server.
+   * @param cat - The "cat" parameter in the "handleCategoryPress" function is likely referring to a
+   * category object or category name that is being passed as an argument to the function. It is used
+   * to determine the current category being selected by the user.
+   * @param ind - ind is a variable that represents the index of the current category being pressed. It
+   * is likely used to keep track of the position of the category in an array or list of categories.
+   */
   const handleCategoryPress = async (baseURL, cat, ind) => {
     let compressed = await deflate(JSON.stringify(categories));
     navigation.navigate('CategoryProducts', {

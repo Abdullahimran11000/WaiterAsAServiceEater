@@ -7,61 +7,44 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Pressable,
-  Alert,
 } from 'react-native';
 
 import {inflate} from 'react-native-gzip';
 import {useSelector, useDispatch} from 'react-redux';
-import {showMessage} from 'react-native-flash-message';
-import {callWaiter, paymentRequest} from '../Server/Methods/Listing';
-import {getTablesList} from '../Regex/SessionCheck';
-
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Colors from '../Assets/Colors';
-import Popup from '../Components/Popup';
-import NewProductCard from '../Components/NewProductCard';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import CountDown from 'react-native-countdown-component';
 import {SocketContext} from '../Context/SocketContext';
 
-const iconSize = 30;
+import Colors from '../Assets/Colors';
+import Popup from '../Components/Popup';
+import Header from '../Components/Header';
+
+import NewProductCard from '../Components/NewProductCard';
+import ProductDetails from './ProductDetails';
 
 const CategoryProducts = ({navigation, route}) => {
   const dispatch = useDispatch();
-  const {count} = useSelector(store => store.cartReducer);
-  const {newOrderTime} = useSelector(store => store.timerReducer);
-  const {isPopReceived} = useSelector(store => store.popupReducer);
-  const {orders, session, user} = useSelector(store => store.sessionReducer);
-  const location_id = user?.role[0]?.staff_location_id;
-  const {layout_setting} = user;
-
   const socket = useContext(SocketContext);
 
-  const bgStyle = {
-    backgroundColor: layout_setting?.basecolor,
-  };
+  const {isPopReceived} = useSelector(store => store.popupReducer);
+  const {user} = useSelector(store => store.sessionReducer);
 
+  const {layout_setting} = user;
   const {baseURL, dishTags, index, current} = route.params;
 
-  const [ip, setIp] = useState('');
-  const [flag, setFlag] = useState(false);
-  const [orderTime, setOrderTime] = useState(0);
+  const [viewFlag, setViewFlag] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [waiterLoader, setWaiterLoader] = useState(false);
-  const [payLoader, setPayLoader] = useState(false);
   const [categories, setCategories] = useState([]);
   const [selectedTag, setSelectedTag] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(index);
   const [currentCategory, setCurrentCategory] = useState(current);
   const [showSearchedData, setShowSearchedData] = useState(false);
-  const [shouldSetState, setShouldSetState] = useState(true);
 
-  useEffect(() => {
-    if (shouldSetState) setOrderTime(newOrderTime);
-  }, [newOrderTime]);
-
+  /* The above code is a React functional component that uses the useEffect hook. It decompresses a
+  string of compressed data (route.params.categories) using the inflate function, then parses the
+  decompressed data into a JavaScript object using JSON.parse. The resulting object is then set as
+  the state of the component using the setCategories function. The setIsLoading function is also
+  used to set the loading state of the component to false. The useEffect hook also returns a cleanup
+  function that resets some state variables. */
   useEffect(() => {
     const decompression = async () => {
       let decompressed = await inflate(route.params.categories);
@@ -71,12 +54,6 @@ const CategoryProducts = ({navigation, route}) => {
 
     decompression();
 
-    const getIp = async () => {
-      setIp(await AsyncStorage.getItem('cloudIp'));
-    };
-
-    getIp();
-
     return () => {
       setShowSearchedData(false);
       setSearchResult([]);
@@ -84,12 +61,10 @@ const CategoryProducts = ({navigation, route}) => {
     };
   }, []);
 
-  const handleBackPress = () => {
-    navigation.goBack();
-  };
-
-  const handleCartPress = () => navigation.navigate('Cart', {baseURL: baseURL});
-
+  /**
+   * This function sets the selected category, clears the selected tag, hides searched data, and
+   * updates the current category based on the provided index.
+   */
   const setSelectedCategory = index => {
     setSelectedIndex(index);
     setSelectedTag('');
@@ -97,6 +72,10 @@ const CategoryProducts = ({navigation, route}) => {
     setCurrentCategory(categories[index]);
   };
 
+  /**
+   * The function handles a selected tag by filtering through categories and menus to find matches and
+   * display the results.
+   */
   const handleTagPres = tagName => {
     if (tagName != selectedTag) {
       let matched = [];
@@ -117,6 +96,9 @@ const CategoryProducts = ({navigation, route}) => {
     }
   };
 
+  /**
+   * This function sets the state of a popup to not received and null.
+   */
   const handlePopClose = () => {
     dispatch({
       type: 'SET_IS_POPUP_RECEIVED',
@@ -129,6 +111,13 @@ const CategoryProducts = ({navigation, route}) => {
     });
   };
 
+  /**
+   * The function handles rendering of a category item with a touchable opacity and updates the selected
+   * category based on the index.
+   * @returns A component that renders a TouchableOpacity with a Text component inside, displaying the
+   * name of an item and changing its background color and text color based on whether it is selected or
+   * not. The onPress function updates the selected category index.
+   */
   const handleRenderItem = ({item, index}) => {
     return (
       <TouchableOpacity
@@ -158,6 +147,15 @@ const CategoryProducts = ({navigation, route}) => {
     );
   };
 
+  /**
+   * The function returns a TouchableOpacity component with a Text component displaying a dish tag name
+   * and an onPress event handler.
+   * @returns A React component that renders a TouchableOpacity with a Text component inside. The Text
+   * component displays a hashtag followed by the tag name from the item object passed as a parameter.
+   * The onPress event of the TouchableOpacity is set to call the handleTagPres function with the
+   * tag_name property of the item object as an argument. The style of the Text component is determined
+   * by the selectedTag state variable.
+   */
   const handleRenderDishTags = ({item}) => {
     return (
       <TouchableOpacity
@@ -179,118 +177,6 @@ const CategoryProducts = ({navigation, route}) => {
     );
   };
 
-  const handleCheckout = () => {
-    setPayLoader(true);
-
-    getTablesList(location_id, session.table_id, async res => {
-      if (res) {
-        const formData = {
-          user_id: user.assignedLocations[0].user_id,
-          session_id: session.session_id,
-          table_id: session.table_id,
-        };
-
-        paymentRequest(formData)
-          .then(res => {
-            const {status, data} = res;
-
-            socket.emit('Payment_request', data?.Notification?.not_id);
-
-            if (status == 200 || status == 201) {
-              let myTimeout = data?.api_delay_time * 1000;
-
-              setPayLoader(false);
-              setFlag(true);
-
-              if (
-                data?.Notification?.session_id == session.session_id &&
-                data?.message.includes('customer')
-              ) {
-                showMessage({
-                  message: data.message,
-                  type: 'warning',
-                });
-
-                setTimeout(() => {
-                  setFlag(false);
-                }, myTimeout);
-              } else if (data?.message.includes('Notification')) {
-                setFlag(false);
-                clearTimeout(myTimeout);
-
-                setTimeout(() => {
-                  showMessage({
-                    message: data.message,
-                    type: 'success',
-                  });
-
-                  navigation.navigate('Servey');
-                }, 300);
-              }
-            }
-          })
-          .catch(error => {
-            setPayLoader(false);
-            console.log('payment api error ', error);
-
-            showMessage({
-              message: 'Could not complete payment',
-              type: 'warning',
-            });
-          });
-      } else {
-        setPayLoader(false);
-        Alert.alert('Session Closed', 'Start a new session', [
-          {
-            text: 'Ok',
-            onPress: () => {
-              dispatch({
-                type: 'SET_NEW_ORDER_TIME',
-                payload: 0,
-              });
-
-              dispatch({
-                type: 'CLEAR_CART',
-              });
-
-              dispatch({
-                type: 'END_SESSION',
-              });
-            },
-          },
-        ]);
-      }
-    });
-  };
-
-  const callTheWaiter = () => {
-    setWaiterLoader(true);
-
-    callWaiter({
-      user_id: user.role[0].user_id,
-      session_id: session.session_id,
-      table_id: session.table_id,
-    })
-      .then(res => {
-        const {status, data} = res;
-
-        if (status == 200 || status == 201) {
-          socket.emit('Call_Waiter_request', data?.Notification?.not_id);
-          showMessage({
-            message: data?.message,
-            type: 'success',
-          });
-        } else {
-          showMessage({
-            message: 'Could not call the waiter',
-            type: 'warning',
-          });
-        }
-      })
-      .catch(err => console.log('callWaiter err ', err))
-      .finally(() => setWaiterLoader(false));
-  };
-
   return isLoading ? (
     <View style={styles.loadingContainer}>
       <ActivityIndicator size={'large'} color={Colors.primary} />
@@ -298,192 +184,120 @@ const CategoryProducts = ({navigation, route}) => {
   ) : (
     <>
       <View style={[styles.container, {opacity: isPopReceived ? 0.5 : 1}]}>
-        <View style={[styles.headerContainer, bgStyle]}>
-          <TouchableOpacity style={styles.backBtn} onPress={handleBackPress}>
-            <Ionicons
-              name="chevron-back"
-              color={Colors.white}
-              size={iconSize}
-            />
-          </TouchableOpacity>
+        <Header
+          baseURL={baseURL}
+          socket={socket}
+          navigation={navigation}
+          name={currentCategory.name}
+          viewFlag={viewFlag}
+          setViewFlag={setViewFlag}
+        />
 
-          <Text
-            style={[styles.headerText, {color: layout_setting?.h2_text_color}]}>
-            {currentCategory.name}
-          </Text>
-
-          {orderTime > 0 && (
-            <CountDown
-              until={orderTime}
-              size={10}
-              onFinish={() => {
-                setOrderTime(0);
-                setShouldSetState(true);
-
-                dispatch({
-                  type: 'SET_NEW_ORDER_TIME',
-                  payload: 0,
-                });
-              }}
-              onChange={() => {
-                if (shouldSetState) setShouldSetState(false);
-
-                dispatch({
-                  type: 'SET_NEW_ORDER_TIME',
-                  payload: newOrderTime - 1,
-                });
-              }}
-              digitStyle={{backgroundColor: '#FFF'}}
-              digitTxtStyle={{color: '#1CC625'}}
-              timeToShow={['M', 'S']}
-              timeLabels={{m: '', s: ''}}
-            />
-          )}
-
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Pressable
-              style={[
-                styles.waiterBtn,
-                {
-                  borderColor:
-                    orders.length == 0 || flag ? Colors.grey : Colors.white,
-                },
-              ]}
-              onPress={handleCheckout}
-              disabled={orders.length == 0 || flag ? true : false}>
-              {payLoader ? (
-                <ActivityIndicator size="small" color={Colors.white} />
-              ) : (
-                <Text
-                  style={[
-                    styles.waiterTxt,
-                    {
-                      color:
-                        orders.length == 0 || flag ? Colors.grey : Colors.white,
-                    },
-                  ]}>
-                  Pay Now
-                </Text>
-              )}
-            </Pressable>
-
-            <Pressable style={styles.waiterBtn} onPress={callTheWaiter}>
-              {waiterLoader ? (
-                <ActivityIndicator size="small" color={Colors.white} />
-              ) : (
-                <Text style={styles.waiterTxt}>Call waiter</Text>
-              )}
-            </Pressable>
-
-            <TouchableOpacity
-              style={styles.cartBtnContainer}
-              onPress={handleCartPress}>
-              {count > 0 && (
-                <View style={styles.cartCounterView}>
-                  <Text style={styles.cartCounter}>{count}</Text>
-                </View>
-              )}
-              <View style={styles.cartBtn}>
-                <Ionicons name="cart" size={30} color={Colors.white} />
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.categoriesRowContainer}>
-          <FlatList
-            horizontal
-            data={categories}
-            renderItem={handleRenderItem}
-            initialScrollIndex={selectedIndex}
-            keyExtractor={(item, index) => index}
-            contentContainerStyle={{flexGrow: 1}}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-
-        <View style={styles.categoriesRowContainer}>
-          <FlatList
-            horizontal
-            data={dishTags}
-            renderItem={handleRenderDishTags}
-            keyExtractor={(item, index) => index}
-            contentContainerStyle={{flexGrow: 1}}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-
-        {showSearchedData == true && searchResult.length == 0 ? (
-          <View style={styles.noResultBody}>
-            <Text style={styles.noResultBodyText}>
-              No matching product found
-            </Text>
-          </View>
-        ) : showSearchedData ? (
-          <View style={styles.body}>
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{flexGrow: 1}}>
-              <View style={styles.searchDataWrapper}>
-                {currentCategory.Menus.length > 0 &&
-                  currentCategory.Menus.map((product, index) => {
-                    let priceWithTax =
-                      product.menu_price +
-                      product.menu_price * (product.menu_tax / 100);
-
-                    return (
-                      <NewProductCard
-                        baseURL={baseURL}
-                        key={index}
-                        item={product}
-                        price={priceWithTax}
-                        navigation={navigation}
-                      />
-                    );
-                  })}
-
-                {searchResult.map((data, index) => {
-                  return (
-                    <NewProductCard
-                      baseURL={baseURL}
-                      key={index}
-                      item={data}
-                      price={data.menu_price}
-                      navigation={navigation}
-                    />
-                  );
-                })}
-              </View>
-            </ScrollView>
-          </View>
+        {viewFlag ? (
+          <ProductDetails baseURL={baseURL} setViewFlag={setViewFlag} />
         ) : (
-          <View style={styles.body}>
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{flexGrow: 1}}>
-              <View style={styles.productWrapper}>
-                <Text style={styles.productTitle}>{currentCategory.name}</Text>
+          <>
+            <View style={styles.categoriesRowContainer}>
+              <FlatList
+                horizontal
+                data={categories}
+                renderItem={handleRenderItem}
+                initialScrollIndex={selectedIndex}
+                keyExtractor={(item, index) => index}
+                contentContainerStyle={{flexGrow: 1}}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
 
-                <View style={styles.productDetailsWrapper}>
-                  {currentCategory.Menus.map((product, index) => {
-                    let priceWithTax =
-                      product.menu_price +
-                      product.menu_price * (product.menu_tax / 100);
+            <View style={styles.categoriesRowContainer}>
+              <FlatList
+                horizontal
+                data={dishTags}
+                renderItem={handleRenderDishTags}
+                keyExtractor={(item, index) => index}
+                contentContainerStyle={{flexGrow: 1}}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
 
-                    return (
-                      <NewProductCard
-                        baseURL={baseURL}
-                        key={index}
-                        item={product}
-                        price={priceWithTax}
-                        navigation={navigation}
-                      />
-                    );
-                  })}
-                </View>
+            {showSearchedData == true && searchResult.length == 0 ? (
+              <View style={styles.noResultBody}>
+                <Text style={styles.noResultBodyText}>
+                  No matching product found
+                </Text>
               </View>
-            </ScrollView>
-          </View>
+            ) : showSearchedData ? (
+              <View style={styles.body}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{flexGrow: 1}}>
+                  <View style={styles.searchDataWrapper}>
+                    {currentCategory.Menus.length > 0 &&
+                      currentCategory.Menus.map((product, index) => {
+                        let priceWithTax =
+                          product.menu_price +
+                          product.menu_price * (product.menu_tax / 100);
+
+                        return (
+                          <NewProductCard
+                            baseURL={baseURL}
+                            key={index}
+                            item={product}
+                            price={priceWithTax}
+                            navigation={navigation}
+                            setViewFlag={setViewFlag}
+                          />
+                        );
+                      })}
+
+                    {searchResult.map((data, index) => {
+                      return (
+                        <NewProductCard
+                          baseURL={baseURL}
+                          key={index}
+                          item={data}
+                          price={data.menu_price}
+                          navigation={navigation}
+                          setViewFlag={setViewFlag}
+                        />
+                      );
+                    })}
+                  </View>
+                </ScrollView>
+              </View>
+            ) : (
+              <View style={styles.body}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{flexGrow: 1}}>
+                  <View style={styles.productWrapper}>
+                    <Text style={styles.productTitle}>
+                      {currentCategory.name}
+                    </Text>
+
+                    <View style={styles.productDetailsWrapper}>
+                      {currentCategory.Menus.map((product, index) => {
+                        let priceWithTax =
+                          product.menu_price +
+                          product.menu_price * (product.menu_tax / 100);
+
+                        return (
+                          <NewProductCard
+                            baseURL={baseURL}
+                            key={index}
+                            item={product}
+                            price={priceWithTax}
+                            navigation={navigation}
+                            setViewFlag={setViewFlag}
+                          />
+                        );
+                      })}
+                    </View>
+                  </View>
+                </ScrollView>
+              </View>
+            )}
+          </>
         )}
       </View>
 

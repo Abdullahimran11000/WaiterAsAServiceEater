@@ -22,13 +22,14 @@ const Servey = () => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
 
-  const {user, session} = useSelector(store => store.sessionReducer);
-  const location_id = user?.role[0]?.staff_location_id;
+  const {session} = useSelector(store => store.sessionReducer);
 
-  const [ip, setIp] = useState('');
   const [fcm, setFcm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  /* This `useEffect` hook is used to retrieve the FCM token from AsyncStorage and set it to the `fcm`
+  state variable. It runs only once when the component mounts, as the dependency array `[]` is
+  empty. */
   useEffect(() => {
     AsyncStorage.getItem('fcmToken')
       .then(token => {
@@ -37,22 +38,12 @@ const Servey = () => {
       .catch(error => {
         console.log('get fcm error ', error);
       });
-
-    const getIp = async () => {
-      setIp(await AsyncStorage.getItem('cloudIp'));
-    };
-
-    getIp();
   }, []);
 
-  const handleSendServey = () => {
-    ToastAndroid.show('Servey Successful', ToastAndroid.SHORT);
-    showMessage({
-      message: 'Servey Submitted',
-      type: 'success',
-    });
-  };
-
+  /**
+   * This function handles the closing of a session by sending a request to the server and updating the
+   * session status.
+   */
   const handleCloseSession = () => {
     setIsLoading(true);
 
@@ -78,6 +69,10 @@ const Servey = () => {
             dispatch({
               type: 'SET_NEW_ORDER_TIME',
               payload: 0,
+            });
+
+            dispatch({
+              type: 'RESET_SESSION_TOTAL',
             });
 
             dispatch({

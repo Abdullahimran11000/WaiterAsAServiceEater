@@ -1,15 +1,15 @@
 import React from 'react';
 import {TouchableOpacity, StyleSheet, Text, View} from 'react-native';
 import {WINDOW_WIDTH} from '../Utils/Size';
+import {useDispatch} from 'react-redux';
 
 import FastImage from 'react-native-fast-image';
 import Colors from '../Assets/Colors';
 import Feather from 'react-native-vector-icons/Feather';
-import {useDispatch} from 'react-redux';
 import Swiper from 'react-native-swiper';
-import Icon from 'react-native-vector-icons/AntDesign';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
-const NewProductCard = ({baseURL, item, price, navigation}) => {
+const NewProductCard = ({baseURL, item, price, navigation, setViewFlag}) => {
   const dispatch = useDispatch();
 
   const onNamePress = () => {
@@ -18,12 +18,11 @@ const NewProductCard = ({baseURL, item, price, navigation}) => {
       payload: item,
     });
 
-    navigation.navigate('ProductDetails', {baseURL: baseURL});
+    setViewFlag(true);
+    // navigation.navigate('ProductDetails', {baseURL: baseURL});
   };
 
-  const {menu_photo, MenuMedia} = item;
-
-  console.log('itttmmmmm', item);
+  const {MenuMedia} = item;
   return (
     <TouchableOpacity
       style={item.highlighted ? styles.containerHighlighted : styles.container}
@@ -59,13 +58,14 @@ const NewProductCard = ({baseURL, item, price, navigation}) => {
       ) : (
         <>
           <Swiper
+            removeClippedSubviews={false}
             showsButtons={true}
             showsPagination={false}
             autoplay={true}
             loop={true}
-            autoplayTimeout={5}
-            nextButton={<Icon name="right" size={24} color={'white'} />}
-            prevButton={<Icon name="left" size={24} color={'white'} />}>
+            autoplayTimeout={3.5}
+            nextButton={<AntDesign name="right" size={24} color={'white'} />}
+            prevButton={<AntDesign name="left" size={24} color={'white'} />}>
             {MenuMedia.map(pic => {
               return (
                 <FastImage

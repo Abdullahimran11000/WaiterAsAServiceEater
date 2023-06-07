@@ -1,50 +1,38 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Text,
   View,
-  Alert,
-  Pressable,
   TextInput,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 
-import FastImage from 'react-native-fast-image';
 import {useSelector, useDispatch} from 'react-redux';
 import {showMessage} from 'react-native-flash-message';
+import {WINDOW_WIDTH} from '../Utils/Size';
+import {cartLogic, cartLogicWithNoDescription} from '../Regex/CartLogic';
+
+import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
 import Colors from '../Assets/Colors';
-import {cartLogic, cartLogicWithNoDescription} from '../Regex/CartLogic';
-import {WINDOW_WIDTH} from '../Utils/Size';
-import {getTablesList} from '../Regex/SessionCheck';
-import {callWaiter, paymentRequest} from '../Server/Methods/Listing';
-import {SocketContext} from '../Context/SocketContext';
-import CountDown from 'react-native-countdown-component';
-import Icon from 'react-native-vector-icons/AntDesign';
 import Swiper from 'react-native-swiper';
 
-const ProductDetails = ({navigation, route}) => {
+const ProductDetails = ({baseURL, setViewFlag}) => {
   const dispatch = useDispatch();
-  const socket = useContext(SocketContext);
 
-  const {user, session, orders} = useSelector(store => store.sessionReducer);
   const {cartData, count} = useSelector(store => store.cartReducer);
-  const {newOrderTime} = useSelector(store => store.timerReducer);
   const {product} = useSelector(store => store.productReducer);
+  const {user} = useSelector(store => store.sessionReducer);
 
   const {layout_setting} = user;
-  const location_id = user?.role[0]?.staff_location_id;
 
   const bgStyle = {
     backgroundColor: layout_setting?.basecolor,
   };
 
-  const {baseURL} = route?.params;
   const {decimal_places} = user.assignedLocations[0].Location;
 
   const {
@@ -60,19 +48,20 @@ const ProductDetails = ({navigation, route}) => {
     MenuMedia,
   } = product;
 
-  const [flag, setFlag] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [newPrice, setNewPrice] = useState(0);
-  const [orderTime, setOrderTime] = useState(0);
   const [hasRequired, setHasRequired] = useState('');
   const [instructions, setInstructions] = useState('');
   const [displayPrice, setDisplayPrice] = useState([]);
-  const [payLoader, setPayLoader] = useState(false);
-  const [waiterLoader, setWaiterLoader] = useState(false);
-  const [shouldSetState, setShouldSetState] = useState(true);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [basePriceValue, setBasePriceValue] = useState(menu_price);
 
+  /* The above code is using the `useEffect` hook in React to iterate over an array of `MenuOptions`
+  and check if certain conditions are met for each element. If an element has a `base_price` value
+  of 1, it sets the `basePriceValue` state to 0. If an element has a `required` value of 1, it sets
+  the `hasRequired` state to the `option_name` of that element. This code is executed once when the
+  component mounts, as indicated by the empty dependency array `[]` passed as the second argument to
+  `use */
   useEffect(() => {
     MenuOptions.forEach(el => {
       if (el.base_price == 1) setBasePriceValue(0);
@@ -80,6 +69,11 @@ const ProductDetails = ({navigation, route}) => {
     });
   }, []);
 
+  /* The above code is using the useEffect hook in React to add a new price object to an array of
+  prices stored in the state variable displayPrice. The new price object includes the calculated
+  price of a menu item with tax added, and has optionId and optionValueId set to -1. The useEffect
+  hook is triggered when the component mounts, indicated by the empty dependency array passed as the
+  second argument. */
   useEffect(() => {
     let prices = [...displayPrice];
     prices.push({
@@ -91,6 +85,12 @@ const ProductDetails = ({navigation, route}) => {
     setDisplayPrice(prices);
   }, []);
 
+  /* The above code is using the useEffect hook in React to set the initial state of a selected options
+  object. It is iterating through an array of menu options and for each option, it is finding the
+  default value and setting it in the selected options object. If the display type of the option is
+  'radio' or 'select', it sets the value, id, menuOptionId, optionId, displayType, optionValueId,
+  optionPrice, and menuOptionType properties in the selected options object. If the display type is
+  not 'radio' or 'select', it sets an empty array for the */
   useEffect(() => {
     let option = {};
 
@@ -138,6 +138,11 @@ const ProductDetails = ({navigation, route}) => {
     setSelectedOptions(option);
   }, []);
 
+  /* The above code is using the `useEffect` hook in React to calculate the total price of a list of
+  items (`displayPrice`) based on their individual prices and the quantity of items (`quantity`).
+  The `price` variable is initialized to 0 and then incremented by each element's price using a
+  `forEach` loop. The final price is then multiplied by the quantity and set as the new price using
+  the `setNewPrice` function. This effect will re-run whenever `displayPrice` or `quantity` changes. */
   useEffect(() => {
     let price = 0;
     displayPrice.forEach(element => {
@@ -147,131 +152,23 @@ const ProductDetails = ({navigation, route}) => {
     setNewPrice(price * quantity);
   }, [displayPrice, quantity]);
 
-  useEffect(() => {
-    if (shouldSetState) setOrderTime(newOrderTime);
-  }, [newOrderTime]);
-
+  /**
+   * The function handleClosePress navigates back to the previous screen.
+   */
   const handleClosePress = () => {
-    navigation.goBack();
+    setViewFlag(false);
+    // navigation.goBack();
   };
 
-  const handleCheckout = () => {
-    setPayLoader(true);
-
-    getTablesList(location_id, session.table_id, async res => {
-      if (res) {
-        const formData = {
-          user_id: user.assignedLocations[0].user_id,
-          session_id: session.session_id,
-          table_id: session.table_id,
-        };
-
-        paymentRequest(formData)
-          .then(res => {
-            const {status, data} = res;
-
-            socket.emit('Payment_request', data?.Notification?.not_id);
-
-            if (status == 200 || status == 201) {
-              let myTimeout = data?.api_delay_time * 1000;
-
-              setPayLoader(false);
-              setFlag(true);
-
-              if (
-                data?.Notification?.session_id == session.session_id &&
-                data?.message.includes('customer')
-              ) {
-                showMessage({
-                  message: data.message,
-                  type: 'warning',
-                });
-
-                setTimeout(() => {
-                  setFlag(false);
-                }, myTimeout);
-              } else if (data?.message.includes('Notification')) {
-                setFlag(false);
-                clearTimeout(myTimeout);
-
-                setTimeout(() => {
-                  showMessage({
-                    message: data.message,
-                    type: 'success',
-                  });
-
-                  navigation.navigate('Servey');
-                }, 300);
-              }
-            }
-          })
-          .catch(error => {
-            setPayLoader(false);
-            console.log('payment api error ', error);
-
-            showMessage({
-              message: 'Could not complete payment',
-              type: 'warning',
-            });
-          });
-      } else {
-        setPayLoader(false);
-        Alert.alert('Session Closed', 'Start a new session', [
-          {
-            text: 'Ok',
-            onPress: () => {
-              dispatch({
-                type: 'SET_NEW_ORDER_TIME',
-                payload: 0,
-              });
-
-              dispatch({
-                type: 'CLEAR_CART',
-              });
-
-              dispatch({
-                type: 'END_SESSION',
-              });
-            },
-          },
-        ]);
-      }
-    });
-  };
-
-  const callTheWaiter = () => {
-    setWaiterLoader(true);
-
-    callWaiter({
-      user_id: user.role[0].user_id,
-      session_id: session.session_id,
-      table_id: session.table_id,
-    })
-      .then(res => {
-        const {status, data} = res;
-
-        if (status == 200 || status == 201) {
-          socket.emit('Call_Waiter_request', data?.Notification?.not_id);
-          showMessage({
-            message: data?.message,
-            type: 'success',
-          });
-        } else {
-          showMessage({
-            message: 'Could not call the waiter',
-            type: 'warning',
-          });
-        }
-      })
-      .catch(err => console.log('callWaiter err ', err))
-      .finally(() => setWaiterLoader(false));
-  };
-
-  const handleCartPress = () =>
-    navigation.navigate('Cart', {
-      baseURL: baseURL,
-    });
-
+  /**
+   * The function handles changes in price based on menu options and taxes.
+   * @param value - an object containing information about the menu option and its value, including the
+   * new price
+   * @param basePrice - The base price of an item.
+   * @param itemTax - The tax percentage to be applied to the item price.
+   * @param [isCheckbox=false] - is a boolean parameter that is optional and defaults to false. It is
+   * used to determine whether the price change is for a checkbox option or not.
+   */
   const handlePriceChange = (value, basePrice, itemTax, isCheckbox = false) => {
     if (basePrice == 1) {
       let prices = [...displayPrice];
@@ -328,6 +225,15 @@ const ProductDetails = ({navigation, route}) => {
     }
   };
 
+  /**
+   * The function handles the selection of a radio button option and updates the selected options
+   * object with the chosen option's details.
+   * @param value - The selected radio button value and its corresponding information such as the
+   * option value, ID, price, tax percentage, and calculated tax.
+   * @param menu - The `menu` parameter is an object that contains information about a menu item,
+   * including its base price, item tax, and an option object that contains the name of the option and
+   * its possible values.
+   */
   const handleRadioSelection = async (value, menu) => {
     handlePriceChange(value, menu.base_price, menu.item_tax);
 
@@ -348,6 +254,14 @@ const ProductDetails = ({navigation, route}) => {
     await setSelectedOptions(options);
   };
 
+  /**
+   * This function handles the selection of a menu option and updates the selected options object
+   * accordingly.
+   * @param value - The selected option value from a dropdown menu.
+   * @param menu - The `menu` parameter is an object that contains information about a menu item's
+   * options and prices. It likely includes properties such as `base_price`, `item_tax`, `Option`, and
+   * `menu_option_value_id`.
+   */
   const handleSelectorSelection = async (value, menu) => {
     handlePriceChange(value, menu.base_price, menu.item_tax);
 
@@ -379,6 +293,13 @@ const ProductDetails = ({navigation, route}) => {
     await setSelectedOptions(options);
   };
 
+  /**
+   * This function handles the selection of checkboxes and updates the selected options object
+   * accordingly.
+   * @param value - The value of the checkbox that was selected/deselected.
+   * @param menu - The `menu` parameter is an object that contains information about a menu option. It
+   * has the following properties:
+   */
   const handleCheckboxSelection = async (value, menu) => {
     handlePriceChange(value, menu.base_price, menu.item_tax, true);
 
@@ -408,6 +329,7 @@ const ProductDetails = ({navigation, route}) => {
           value.new_price,
           menu.item_tax,
         ),
+        quantity: 1,
       });
 
       current = selections;
@@ -417,12 +339,25 @@ const ProductDetails = ({navigation, route}) => {
     await setSelectedOptions(options);
   };
 
+  /**
+   * This is a function that takes in a text parameter and sets it as the instructions.
+   */
   const handleInstructionChange = text => setInstructions(text);
+
+  /**
+   * This function handles incrementing a quantity state by one.
+   */
   const handleIncreament = () => setQuantity(prevState => prevState + 1);
 
+  /**
+   * The function handles decrementing a quantity state, ensuring it never goes below 1.
+   */
   const handleDecreament = () =>
     setQuantity(prevState => (prevState > 1 ? prevState - 1 : 1));
 
+  /**
+   * This function adds an item to the cart in Redux and displays a success message.
+   */
   const handleAddToRedux = item => {
     let n = count + quantity;
 
@@ -439,6 +374,13 @@ const ProductDetails = ({navigation, route}) => {
     handleClosePress();
   };
 
+  /**
+   * The function updates the quantity and price of an item in a shopping cart and dispatches the
+   * changes to the Redux store.
+   * @param [sameIndex] - sameIndex is an optional parameter that represents the index of the item in
+   * the cartData array that needs to be updated. If sameIndex is not provided, the function will
+   * search for the item in the cartData array based on the menu_name and instructions parameters.
+   */
   const handleChangeReduxQuantity = (sameIndex = -1) => {
     let n = count + quantity;
     if (sameIndex == -1) {
@@ -466,6 +408,10 @@ const ProductDetails = ({navigation, route}) => {
     handleClosePress();
   };
 
+  /**
+   * The function handles adding an item to the cart with selected options and checks if the required
+   * option is selected.
+   */
   const handleAddToCart = () => {
     if (selectedOptions[hasRequired]?.id != -1) {
       let item = {
@@ -507,11 +453,127 @@ const ProductDetails = ({navigation, route}) => {
     }
   };
 
+  /**
+   * The function calculates the tax percentage of a given price.
+   * @param price - The price of a product or service.
+   * @param tax - The tax parameter is the percentage of tax to be applied on the price. For example,
+   * if the tax is 10%, then tax parameter would be 10.
+   * @returns The function `calculateTaxPercentOfPrice` returns the tax amount as a percentage of the
+   * given price.
+   */
   const calculateTaxPercentOfPrice = (price, tax) => {
     let taxPercentOfPrice = (price * tax) / 100;
     return taxPercentOfPrice;
   };
 
+  /**
+   * This function handles the increment of quantity for a selected option and updates the display
+   * price accordingly.
+   * @param key - The key is a string that represents the identifier of a specific option group in the
+   * selectedOptions object.
+   * @param value - The `value` parameter is an object that contains information about a menu option
+   * and its selected value. It has properties such as `OptionValue`, `menu_option_id`, and
+   * `menu_option_value_id`.
+   */
+  const handleOptionQuantityIncrement = (key, value) => {
+    let selectedOptionsTemp = {...selectedOptions};
+    let checkboxOptions = [...selectedOptionsTemp[key]];
+
+    let prices = [...displayPrice];
+
+    const index = checkboxOptions?.findIndex(
+      el => el.value == value?.OptionValue?.value,
+    );
+
+    const priceIndex = displayPrice.findIndex(
+      el =>
+        el.optionId == value.menu_option_id &&
+        el.optionValueId == value.menu_option_value_id,
+    );
+
+    let checkboxOptionValues = {...checkboxOptions[index]};
+    let currentPrice = {...prices[priceIndex]};
+
+    currentPrice.price =
+      currentPrice.price / checkboxOptionValues.quantity + currentPrice.price;
+
+    currentPrice.calculated_tax =
+      currentPrice.calculated_tax / checkboxOptionValues.quantity +
+      currentPrice.calculated_tax;
+
+    checkboxOptionValues.quantity += 1;
+
+    checkboxOptions[index] = checkboxOptionValues;
+    selectedOptionsTemp[key] = checkboxOptions;
+    prices[priceIndex] = currentPrice;
+
+    setSelectedOptions(selectedOptionsTemp);
+    setDisplayPrice(prices);
+  };
+
+  /**
+   * This function handles the decrement of quantity for a selected option in a menu.
+   * @param key - The key is a string that represents the identifier of the selected option. It is used
+   * to access and update the corresponding option in the selectedOptions object.
+   * @param value - The `value` parameter is an object that contains information about the option value
+   * being decremented, including its `OptionValue` object, `menu_option_id`, and
+   * `menu_option_value_id`.
+   */
+  const handleOptionQuantityDecrement = (key, value) => {
+    let selectedOptionsTemp = {...selectedOptions};
+    let checkboxOptions = [...selectedOptionsTemp[key]];
+
+    let prices = [...displayPrice];
+
+    let index = checkboxOptions?.findIndex(
+      el => el.value == value?.OptionValue?.value,
+    );
+
+    const priceIndex = displayPrice.findIndex(
+      el =>
+        el.optionId == value.menu_option_id &&
+        el.optionValueId == value.menu_option_value_id,
+    );
+
+    let checkboxOptionValues = {...checkboxOptions[index]};
+    let currentPrice = {...prices[priceIndex]};
+
+    currentPrice.price =
+      currentPrice.price - currentPrice.price / checkboxOptionValues.quantity;
+
+    currentPrice.calculated_tax =
+      currentPrice.calculated_tax -
+      currentPrice.calculated_tax / checkboxOptionValues.quantity;
+
+    checkboxOptionValues.quantity -= 1;
+
+    if (checkboxOptionValues.quantity == 0) {
+      checkboxOptions.splice(index, 1);
+      prices.splice(priceIndex, 1);
+
+      selectedOptionsTemp[key] = checkboxOptions;
+
+      setSelectedOptions(selectedOptionsTemp);
+      setDisplayPrice(prices);
+    } else {
+      checkboxOptions[index] = checkboxOptionValues;
+      selectedOptionsTemp[key] = checkboxOptions;
+      prices[priceIndex] = currentPrice;
+
+      setSelectedOptions(selectedOptionsTemp);
+      setDisplayPrice(prices);
+    }
+  };
+
+  /**
+   * The function renders radio buttons with options and prices for a menu item.
+   * @param value - an object representing a single option value for a menu item option
+   * @param index - The index of the current element being rendered in the array.
+   * @param menu - The `menu` parameter is an object that contains information about a menu item,
+   * including its options and option values.
+   * @returns A function that renders a list of radio buttons with their corresponding option values
+   * and prices. The function also checks if an option value is selected and highlights it accordingly.
+   */
   const renderRadioBtns = (value, index, menu) => {
     let isSelected =
       selectedOptions[menu.Option.option_name]?.value ==
@@ -548,6 +610,17 @@ const ProductDetails = ({navigation, route}) => {
     );
   };
 
+  /**
+   * The function renders selector buttons with their names and prices based on the selected options
+   * and menu.
+   * @param value - an object representing a menu option value
+   * @param index - The index of the current element being rendered in the array.
+   * @param menu - The `menu` parameter is an object that contains information about a menu item,
+   * including its options and option values.
+   * @returns A JSX element is being returned, specifically a TouchableOpacity component with nested
+   * View and Text components. The content of the View and Text components depend on the values of the
+   * parameters passed to the function and the state of the selectedOptions object.
+   */
   const renderSelectorBtns = (value, index, menu) => {
     let isSelected =
       selectedOptions[menu.Option.option_name]?.value ==
@@ -583,17 +656,33 @@ const ProductDetails = ({navigation, route}) => {
     );
   };
 
+  /**
+   * This function renders a checkbox button with quantity and price options for a menu item.
+   * @param value - an object representing a single option value for a menu item option
+   * @param index - The index of the current element being rendered in the array.
+   * @param menu - The `menu` parameter is an object that represents a menu item. It contains
+   * information such as the name of the menu item, its price, and any options or variations available
+   * for that item. The `renderCheckboxBtns` function is using the `menu` object to render a list of
+   * checkbox
+   * @returns A function component that renders a checkbox button with its name, price, and quantity.
+   * The component also checks if the checkbox button is selected and displays the quantity and
+   * increment/decrement buttons accordingly.
+   */
   const renderCheckboxBtns = (value, index, menu) => {
     let isSelected = selectedOptions[menu.Option.option_name]?.some(
       el => el?.value == value?.OptionValue?.value,
     );
 
+    let qty = 0;
+    selectedOptions[menu.Option.option_name]?.forEach(el => {
+      if (el?.value == value?.OptionValue?.value) qty = el.quantity;
+    });
+
     return (
-      <TouchableOpacity
-        key={index}
-        style={styles.menuOptionContainer}
-        onPress={() => handleCheckboxSelection(value, menu)}>
-        <View style={styles.menuOptionNameContainer}>
+      <View key={index} style={styles.menuOptionContainer}>
+        <TouchableOpacity
+          style={[styles.menuOptionNameContainer, {width: '40%'}]}
+          onPress={() => handleCheckboxSelection(value, menu)}>
           {isSelected ? (
             <Fontisto name="checkbox-active" size={15} color={Colors.primary} />
           ) : (
@@ -602,7 +691,44 @@ const ProductDetails = ({navigation, route}) => {
           <Text style={styles.menuOptionNameText}>
             {value?.OptionValue?.value}
           </Text>
-        </View>
+        </TouchableOpacity>
+
+        {isSelected && (
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <TouchableOpacity
+              onPress={() =>
+                handleOptionQuantityDecrement(menu.Option.option_name, value)
+              }>
+              <AntDesign
+                name="minussquare"
+                size={30}
+                color={layout_setting?.basecolor}
+              />
+            </TouchableOpacity>
+
+            <Text
+              style={{fontSize: 18, color: Colors.black, marginHorizontal: 5}}>
+              {qty}
+            </Text>
+
+            <TouchableOpacity
+              onPress={() =>
+                handleOptionQuantityIncrement(menu.Option.option_name, value)
+              }>
+              <AntDesign
+                name="plussquare"
+                size={30}
+                color={layout_setting?.basecolor}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+
         <View style={styles.menuOptionPriceContainer}>
           <Text style={styles.menuOptionPriceText}>
             {value?.new_price == 0 ||
@@ -615,95 +741,12 @@ const ProductDetails = ({navigation, route}) => {
                 ).toFixed(2)}`}
           </Text>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <View style={[styles.topContainer, bgStyle]}>
-        <TouchableOpacity style={styles.backBtn} onPress={handleClosePress}>
-          <Ionicons name="chevron-back" color={Colors.white} size={30} />
-        </TouchableOpacity>
-
-        {orderTime > 0 && (
-          <CountDown
-            until={orderTime}
-            size={10}
-            onFinish={() => {
-              setOrderTime(0);
-              setShouldSetState(true);
-
-              dispatch({
-                type: 'SET_NEW_ORDER_TIME',
-                payload: 0,
-              });
-            }}
-            onChange={() => {
-              if (shouldSetState) setShouldSetState(false);
-
-              dispatch({
-                type: 'SET_NEW_ORDER_TIME',
-                payload: newOrderTime - 1,
-              });
-            }}
-            digitStyle={{backgroundColor: '#FFF'}}
-            digitTxtStyle={{color: '#1CC625'}}
-            timeToShow={['M', 'S']}
-            timeLabels={{m: '', s: ''}}
-          />
-        )}
-
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Pressable
-            style={[
-              styles.waiterBtn,
-              {
-                borderColor:
-                  orders.length == 0 || flag ? Colors.grey : Colors.white,
-              },
-            ]}
-            onPress={handleCheckout}
-            disabled={orders.length == 0 || flag ? true : false}>
-            {payLoader ? (
-              <ActivityIndicator size="small" color={Colors.white} />
-            ) : (
-              <Text
-                style={[
-                  styles.waiterTxt,
-                  {
-                    color:
-                      orders.length == 0 || flag ? Colors.grey : Colors.white,
-                  },
-                ]}>
-                Pay Now
-              </Text>
-            )}
-          </Pressable>
-          <Pressable style={styles.waiterBtn} onPress={callTheWaiter}>
-            {waiterLoader ? (
-              <ActivityIndicator size="small" color={Colors.white} />
-            ) : (
-              <Text style={styles.waiterTxt}>Call waiter</Text>
-            )}
-          </Pressable>
-
-          <TouchableOpacity
-            style={styles.cartBtnContainer}
-            onPressIn={handleCartPress}>
-            {count > 0 && (
-              <View style={styles.cartCounterView}>
-                <Text style={styles.cartCounter}>{count}</Text>
-              </View>
-            )}
-
-            <View style={styles.cartBtn}>
-              <Ionicons name="cart" size={30} color={Colors.white} />
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
-
       <ScrollView
         style={{flex: 0.93}}
         contentContainerStyle={{flexGrow: 1}}
@@ -719,12 +762,18 @@ const ProductDetails = ({navigation, route}) => {
             </View>
           ) : (
             <Swiper
+              removeClippedSubviews={false}
+              autoplayTimeout={3.5}
               style={{height: WINDOW_WIDTH < 420 ? 125 : 220}}
               showsButtons={true}
               showsPagination={false}
               autoplay={true}
-              nextButton={<Icon name="caretright" size={24} color={'white'} />}
-              prevButton={<Icon name="caretleft" size={24} color={'white'} />}>
+              nextButton={
+                <AntDesign name="caretright" size={24} color={'white'} />
+              }
+              prevButton={
+                <AntDesign name="caretleft" size={24} color={'white'} />
+              }>
               {MenuMedia.map((item, index) => {
                 return (
                   <View style={styles.productImageContainer}>
@@ -1035,7 +1084,6 @@ const styles = StyleSheet.create({
   },
 
   menuOptionNameContainer: {
-    // width: '90%',
     paddingVertical: 5,
     alignItems: 'center',
     flexDirection: 'row',
