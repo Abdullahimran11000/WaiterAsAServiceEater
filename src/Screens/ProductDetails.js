@@ -196,7 +196,7 @@ const ProductDetails = ({baseURL, setViewFlag}) => {
       if (index > -1) {
         let current = prices[index];
         if (current.optionValueId == value.menu_option_value_id) {
-          prices.splice(index, 1);
+          // prices.splice(index, 1);
         } else {
           current.optionValueId = value.menu_option_value_id;
           current.price =
@@ -693,7 +693,7 @@ const ProductDetails = ({baseURL, setViewFlag}) => {
           </Text>
         </TouchableOpacity>
 
-        {isSelected && (
+        {/* {isSelected && (
           <View
             style={{
               alignItems: 'center',
@@ -727,7 +727,7 @@ const ProductDetails = ({baseURL, setViewFlag}) => {
               />
             </TouchableOpacity>
           </View>
-        )}
+        )} */}
 
         <View style={styles.menuOptionPriceContainer}>
           <Text style={styles.menuOptionPriceText}>

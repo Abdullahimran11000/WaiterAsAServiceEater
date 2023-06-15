@@ -6,6 +6,9 @@ export const GetLocationCategories = id =>
 export const GetLocationTables = id =>
   getRequest(`admin/${id}/tables/tableStatus`);
 
+export const GetSurveyQuestionList = id =>
+  getRequest(`/survey/${id}/survey_questions_list`);
+
 export const StartSession = payload =>
   postRequest('locationSessions/start', payload);
 
@@ -16,6 +19,9 @@ export const paymentRequest = payload =>
 
 export const PlaceOrder = (id, payload) =>
   postRequest(`customers/orders/${id}/place_order`, payload);
+
+export const SubmitResponse = (id, payload) =>
+  postRequest(`/survey/${id}/response`, payload);
 
 export const ManagerLogin = payload => postRequest('sessions/manager', payload);
 export const ManagerLogout = () => getRequest('sessions/app/logout');

@@ -55,7 +55,8 @@ const CurrentOrder = ({route, handleBackPress}) => {
     let total_tax = totalTax;
     cartData.forEach(element => {
       amount += element.itemPrice;
-      total_tax += (element.itemOwnPrice * element.itemTax) / 100;
+      total_tax +=
+        (element.itemOwnPrice * element.itemTax * element.itemQuantity) / 100;
 
       for (const key in element) {
         if (element[key].id != -1) {
@@ -72,8 +73,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
           }
         }
       }
-
-      total_tax *= element.itemQuantity;
+      // total_tax *= element.itemQuantity;
     });
 
     setSubTotalAmount(amount - total_tax);
@@ -354,7 +354,10 @@ const CurrentOrder = ({route, handleBackPress}) => {
                 itemCount: element.itemQuantity,
                 menu_price: element.itemOwnPrice,
                 comment: element.itemSpecial,
-                order_menu_tax: element.itemOwnPrice * (element.itemTax / 100),
+                order_menu_tax:
+                  element.itemOwnPrice *
+                  element.itemQuantity *
+                  (element.itemTax / 100),
                 menu_tax_percentage: element.itemTax,
               });
 

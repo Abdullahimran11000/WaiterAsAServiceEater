@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
 
-  body: {flex: 1, paddingHorizontal: 20},
+  body: {flex: 1, paddingHorizontal: 0},
 
   noResultBody: {
     height: '100%',
