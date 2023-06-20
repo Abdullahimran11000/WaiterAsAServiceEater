@@ -66,51 +66,57 @@ const Servey = () => {
     }
   };
 
-  const handleSubmitResponse = () => {
+  const handleSubmitResponse = async () => {
     setIsLoading(true);
     let response = [];
 
     questionList.map(data => {
-      response.push({
-        location_id: location_id,
-        session_id: session.session_id,
-        response: data.newTypeValue,
-        question_id: data.question_id,
-      });
+      if (data.newTypeValue != undefined && data.newTypeValue != '') {
+        response.push({
+          location_id: location_id,
+          session_id: session.session_id,
+          response: data.newTypeValue,
+          question_id: data.question_id,
+        });
+      }
     });
 
     try {
-      SubmitResponse(location_id, {response: response})
-        .then(res => {
-          const {status} = res;
-          if (status == 200 || status == 201) {
+      if (response.length > 0) {
+        await SubmitResponse(location_id, {response: response})
+          .then(res => {
+            const {status} = res;
+            if (status == 200 || status == 201) {
+              setIsLoading(false);
+
+              showMessage({
+                message: 'Response Updated',
+                type: 'success',
+              });
+              /*
+               *  "handle close session" function is called here , we have to remove this function when need
+               */
+              handleCloseSession();
+            } else {
+              setIsLoading(false);
+              showMessage({
+                message: 'Could not update Response',
+                type: 'warning',
+              });
+            }
+          })
+          .catch(error => {
             setIsLoading(false);
+            console.log('submit response api error ', error);
 
             showMessage({
-              message: 'Response Updated',
-              type: 'success',
-            });
-            /*
-             *  "handle close session" function is called here , we have to remove this function when need
-             */
-            handleCloseSession();
-          } else {
-            setIsLoading(false);
-            showMessage({
-              message: 'Could not update Response',
+              message: 'Could not Response Api',
               type: 'warning',
             });
-          }
-        })
-        .catch(error => {
-          setIsLoading(false);
-          console.log('submit response api error ', error);
-
-          showMessage({
-            message: 'Could not Response Api',
-            type: 'warning',
           });
-        });
+      } else {
+        handleCloseSession();
+      }
     } catch (error) {
       setIsLoading(false);
       console.log('submit response Error ', error);

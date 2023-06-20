@@ -194,7 +194,11 @@ const CategoryProducts = ({navigation, route}) => {
         />
 
         {viewFlag ? (
-          <ProductDetails baseURL={baseURL} setViewFlag={setViewFlag} />
+          <ProductDetails
+            mainCategories={categories}
+            baseURL={baseURL}
+            setViewFlag={setViewFlag}
+          />
         ) : (
           <>
             <View style={styles.categoriesRowContainer}>

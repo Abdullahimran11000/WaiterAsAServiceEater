@@ -19,8 +19,10 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Colors from '../Assets/Colors';
 import Swiper from 'react-native-swiper';
+import NewProductCard from '../Components/NewProductCard';
+import {useFocusEffect} from '@react-navigation/native';
 
-const ProductDetails = ({baseURL, setViewFlag}) => {
+const ProductDetails = ({baseURL, setViewFlag, mainCategories}) => {
   const dispatch = useDispatch();
 
   const {cartData, count} = useSelector(store => store.cartReducer);
@@ -46,6 +48,7 @@ const ProductDetails = ({baseURL, setViewFlag}) => {
     menu_tax,
     menu_type,
     MenuMedia,
+    MenuItemRecommendations,
   } = product;
 
   const [quantity, setQuantity] = useState(1);
@@ -55,6 +58,7 @@ const ProductDetails = ({baseURL, setViewFlag}) => {
   const [displayPrice, setDisplayPrice] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [basePriceValue, setBasePriceValue] = useState(menu_price);
+  const [recItems, setRecItems] = useState([]);
 
   /* The above code is using the `useEffect` hook in React to iterate over an array of `MenuOptions`
   and check if certain conditions are met for each element. If an element has a `base_price` value
@@ -68,6 +72,34 @@ const ProductDetails = ({baseURL, setViewFlag}) => {
       if (el.required == 1) setHasRequired(el.Option.option_name);
     });
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let oldrec = [];
+      for (var i = 0; i < MenuItemRecommendations.length; i++) {
+        for (var a = 0; a < mainCategories.length; a++) {
+          if (
+            MenuItemRecommendations[i].Menu.menu_category_id ==
+            mainCategories[a].category_id
+          ) {
+            for (var b = 0; b < mainCategories[a].Menus.length; b++) {
+              if (
+                MenuItemRecommendations[i].recommendation_item_id ==
+                mainCategories[a].Menus[b].menu_id
+              ) {
+                oldrec.push(mainCategories[a].Menus[b]);
+                setRecItems(oldrec);
+                break;
+              }
+            }
+          }
+        }
+      }
+      if (oldrec.length === 0) {
+        setRecItems([]);
+      }
+    }, [product]),
+  );
 
   /* The above code is using the useEffect hook in React to add a new price object to an array of
   prices stored in the state variable displayPrice. The new price object includes the calculated
@@ -879,6 +911,31 @@ const ProductDetails = ({baseURL, setViewFlag}) => {
             onChangeText={handleInstructionChange}
           />
         </View>
+
+        {recItems.length > 0 && (
+          <View style={styles.menuOptionsWrapper}>
+            <View style={styles.menuOptionTitleContainer}>
+              <Text style={styles.productNameText}>Recommended Item</Text>
+            </View>
+
+            <View style={styles.productDetailsWrapper}>
+              {recItems.map((prod, index) => {
+                let priceWithTax =
+                  prod.menu_price + prod.menu_price * (prod.menu_tax / 100);
+
+                return (
+                  <NewProductCard
+                    baseURL={baseURL}
+                    key={index}
+                    item={prod}
+                    price={priceWithTax}
+                    setViewFlag={setViewFlag}
+                  />
+                );
+              })}
+            </View>
+          </View>
+        )}
       </ScrollView>
 
       <View style={styles.bottomBtnsWrapper}>
@@ -927,6 +984,11 @@ const ProductDetails = ({baseURL, setViewFlag}) => {
 export default ProductDetails;
 
 const styles = StyleSheet.create({
+  productDetailsWrapper: {
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   container: {flex: 1},
 
   topContainer: {
