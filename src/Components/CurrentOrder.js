@@ -382,7 +382,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
               qrcodedata: '',
               promocode_id: null,
               payment_status_id: 2,
-              order_tax: totalTax,
+              order_tax: Math.round(totalTax * 1e2) / 1e2,
             };
 
             PlaceOrder(location_id, formData)
