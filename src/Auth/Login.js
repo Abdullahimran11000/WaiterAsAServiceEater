@@ -72,10 +72,31 @@ const Login = ({navigation}) => {
           if (status == 200 || status == 201) {
             AsyncStorage.setItem('token', data?.token)
               .then(() => {
-                dispatch({
-                  type: 'SET_USER',
-                  payload: data,
-                });
+                if (data.assignedLocations[0].Location.decimal_places == 0) {
+                  let copy = {...data};
+                  copy = {
+                    ...data,
+                    assignedLocations: data.assignedLocations.map(el => {
+                      return {
+                        ...el,
+                        Location: {
+                          ...el.Location,
+                          decimal_places: 2,
+                        },
+                      };
+                    }),
+                  };
+
+                  dispatch({
+                    type: 'SET_USER',
+                    payload: copy,
+                  });
+                } else {
+                  dispatch({
+                    type: 'SET_USER',
+                    payload: data,
+                  });
+                }
 
                 showMessage({
                   message: 'Login Successful',

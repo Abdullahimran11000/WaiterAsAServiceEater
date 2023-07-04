@@ -346,6 +346,14 @@ const CurrentOrder = ({route, handleBackPress}) => {
                 }
               }
 
+              let order_item_tax = parseFloat(
+                (
+                  element.itemOwnPrice *
+                  element.itemQuantity *
+                  (element.itemTax / 100)
+                ).toFixed(4),
+              );
+
               menuItems.push({
                 menu_id: element.itemId,
                 menu_name: element.itemName,
@@ -354,10 +362,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
                 itemCount: element.itemQuantity,
                 menu_price: element.itemOwnPrice,
                 comment: element.itemSpecial,
-                order_menu_tax:
-                  element.itemOwnPrice *
-                  element.itemQuantity *
-                  (element.itemTax / 100),
+                order_menu_tax: order_item_tax,
                 menu_tax_percentage: element.itemTax,
               });
 
@@ -376,7 +381,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
               order_variant: 'small',
               discount_id: 1,
               total_discount: 0,
-              totalPrice: totalAmount.toFixed(decimal_places),
+              totalPrice: parseFloat(totalAmount.toFixed(decimal_places)),
               comment: '',
               qrcode: '',
               qrcodedata: '',
