@@ -6,9 +6,13 @@ import {useSelector} from 'react-redux';
 import FastImage from 'react-native-fast-image';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Colors from '../Assets/Colors';
+import {ROOT_URL} from '../Server/config';
 
 const Popup = ({handlePopClose}) => {
+  const {cloudIp} = useSelector(store => store.sessionReducer);
   const {popupData} = useSelector(store => store.popupReducer);
+
+  let cloud_ip = cloudIp == '' ? ROOT_URL : cloudIp;
 
   return (
     <View style={styles.container}>
@@ -16,7 +20,7 @@ const Popup = ({handlePopClose}) => {
       <Text style={styles.descriptionText}>{popupData?.body}</Text>
 
       <FastImage
-        source={{uri: popupData?.android?.imageUrl}}
+        source={{uri: cloud_ip + popupData?.imageUrl}}
         style={styles.imgStyle}
         resizeMode="stretch"
       />
@@ -52,7 +56,7 @@ const styles = StyleSheet.create({
   },
 
   descriptionText: {fontSize: 18, color: Colors.white},
-  imgStyle: {width: '75%', height: '50%', borderRadius: 10},
+  imgStyle: {width: '50%', height: '50%', borderRadius: 10},
 
   closeBtn: {
     padding: 5,

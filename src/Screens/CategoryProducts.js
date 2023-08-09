@@ -26,6 +26,7 @@ const CategoryProducts = ({navigation, route}) => {
 
   const {isPopReceived} = useSelector(store => store.popupReducer);
   const {user} = useSelector(store => store.sessionReducer);
+  const {cartData} = useSelector(store => store.cartReducer);
 
   const {layout_setting} = user;
   const {baseURL, dishTags, index, current} = route.params;
@@ -38,6 +39,7 @@ const CategoryProducts = ({navigation, route}) => {
   const [selectedIndex, setSelectedIndex] = useState(index);
   const [currentCategory, setCurrentCategory] = useState(current);
   const [showSearchedData, setShowSearchedData] = useState(false);
+  const [checkCart, setCheckCart] = useState(false);
 
   /* The above code is a React functional component that uses the useEffect hook. It decompresses a
   string of compressed data (route.params.categories) using the inflate function, then parses the
@@ -60,6 +62,41 @@ const CategoryProducts = ({navigation, route}) => {
       setSelectedTag('');
     };
   }, []);
+
+  useEffect(() => {
+    const max = cartData[cartData?.length - 1]?.MenuTags.reduce(function (
+      prev,
+      current,
+    ) {
+      return prev.Dish_Tag?.priority > current?.Dish_Tag?.priority
+        ? prev
+        : current;
+    });
+
+    let filtered = dishTags.filter(item => {
+      return item?.priority === max?.Dish_Tag?.priority + 1;
+    });
+
+    if (filtered?.length > 0 && selectedTag !== '') {
+      let tagName = filtered[0]?.tag_name;
+      let matched = [];
+
+      setSelectedTag(filtered[0]?.tag_name);
+      categories.forEach(cat => {
+        cat.Menus.forEach(menu => {
+          menu.MenuTags.forEach(tag => {
+            if (tag.Dish_Tag.tag_name === tagName) {
+              matched.push(menu);
+            }
+          });
+        });
+      });
+
+      setSearchResult(matched);
+      setShowSearchedData(true);
+    }
+    setCheckCart(false);
+  }, [checkCart, cartData]);
 
   /**
    * This function sets the selected category, clears the selected tag, hides searched data, and
@@ -198,6 +235,7 @@ const CategoryProducts = ({navigation, route}) => {
             mainCategories={categories}
             baseURL={baseURL}
             setViewFlag={setViewFlag}
+            setCheckCart={setCheckCart}
           />
         ) : (
           <>

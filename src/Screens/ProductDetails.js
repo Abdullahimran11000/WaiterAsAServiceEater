@@ -22,7 +22,12 @@ import Swiper from 'react-native-swiper';
 import NewProductCard from '../Components/NewProductCard';
 import {useFocusEffect} from '@react-navigation/native';
 
-const ProductDetails = ({baseURL, setViewFlag, mainCategories}) => {
+const ProductDetails = ({
+  baseURL,
+  setViewFlag,
+  mainCategories,
+  setCheckCart,
+}) => {
   const dispatch = useDispatch();
 
   const {cartData, count} = useSelector(store => store.cartReducer);
@@ -49,6 +54,7 @@ const ProductDetails = ({baseURL, setViewFlag, mainCategories}) => {
     menu_type,
     MenuMedia,
     MenuItemRecommendations,
+    MenuTags,
   } = product;
 
   const [quantity, setQuantity] = useState(1);
@@ -445,8 +451,11 @@ const ProductDetails = ({baseURL, setViewFlag, mainCategories}) => {
    * option is selected.
    */
   const handleAddToCart = () => {
+    setCheckCart(true);
+
     if (selectedOptions[hasRequired]?.id != -1) {
       let item = {
+        MenuTags: MenuTags,
         itemId: menu_id,
         itemName: menu_name,
         itemOwnPrice: basePriceValue,
