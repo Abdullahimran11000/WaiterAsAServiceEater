@@ -195,7 +195,7 @@ const Login = ({navigation}) => {
 
       <View style={styles.logoContainer}>
         <FastImage
-          source={require('../Assets/Images/toc.png')}
+          source={require('../Assets/Icons/serveall.png')}
           style={{width: 300, height: 200}}
           resizeMode="contain"
         />

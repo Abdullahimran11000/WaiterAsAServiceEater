@@ -1,7 +1,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ROOT_URL = 'https://phpstack-920157-3520511.cloudwaysapps.com/';
+// const ROOT_URL = 'https://phpstack-920157-3520511.cloudwaysapps.com/';
+const ROOT_URL = 'https://server.servall.be/';
 
 const client = axios.create({
   baseURL: ROOT_URL,

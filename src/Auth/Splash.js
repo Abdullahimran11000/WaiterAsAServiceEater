@@ -25,7 +25,7 @@ const Splash = ({navigation}) => {
   return (
     <View style={styles.container}>
       <FastImage
-        source={require('../Assets/Images/toc.png')}
+        source={require('../Assets/Icons/serveall.png')}
         resizeMode="contain"
         style={styles.logo}
       />
