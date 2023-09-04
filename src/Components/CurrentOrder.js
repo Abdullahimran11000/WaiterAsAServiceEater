@@ -60,8 +60,8 @@ const CurrentOrder = ({route, handleBackPress}) => {
         (element.itemOwnPrice * element.itemTax * element.itemQuantity) / 100;
 
       for (const key in element) {
-        if (element[key].id != -1 && key != menuTags) {
-          if (Array.isArray(element[key])) {
+        if (element[key].id != -1) {
+          if (Array.isArray(element[key]) && key != menuTags) {
             element[key].map(item => {
               total_tax = total_tax + item.calculated_tax;
             });
@@ -100,7 +100,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
 
         for (const key in newItem) {
           if (newItem[key].id != -1) {
-            if (Array.isArray(newItem[key])) {
+            if (Array.isArray(newItem[key]) && key != menuTags) {
               newItem[key].map(item => {
                 total_tax =
                   total_tax - item.calculated_tax * newItem.itemQuantity;
@@ -162,7 +162,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
 
         for (const key in newItem) {
           if (newItem[key].id != -1) {
-            if (Array.isArray(newItem[key])) {
+            if (Array.isArray(newItem[key]) && key != menuTags) {
               newItem[key].map(item => {
                 total_tax = total_tax + item.calculated_tax;
               });
@@ -214,7 +214,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
 
         for (const key in newItem) {
           if (newItem[key].id != -1) {
-            if (Array.isArray(newItem[key])) {
+            if (Array.isArray(newItem[key]) && key != menuTags) {
               newItem[key].map(item => {
                 total_tax = total_tax - item.calculated_tax;
               });
@@ -276,7 +276,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
             cartData.forEach(element => {
               for (const key in element) {
                 if (typeof element[key] == 'object') {
-                  if (Array.isArray(element[key] && key != menuTags)) {
+                  if (Array.isArray(element[key]) && key != menuTags) {
                     if (element[key].length > 0) {
                       let optionValues = [];
                       element[key].forEach(el => {
