@@ -9,14 +9,14 @@ import {
 } from 'react-native';
 
 import {deflate} from 'react-native-gzip';
-import FastImage from 'react-native-fast-image';
 import {useSelector} from 'react-redux';
-
-import Path from '../Utils/Path';
-import Colors from '../Assets/Colors';
 import {GetLocationCategories} from '../Server/Methods/Listing';
-import CategoryCard from '../Components/CategoryCard';
 import {WINDOW_HEIGHT} from '../Utils/Size';
+import {ROOT_URL} from '../Server/config';
+
+import Colors from '../Assets/Colors';
+import FastImage from 'react-native-fast-image';
+import CategoryCard from '../Components/CategoryCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Categories = ({navigation}) => {
@@ -40,9 +40,8 @@ const Categories = ({navigation}) => {
    * value.
    */
   const setBaseUrlFunction = async () => {
-    let rooturl = 'https://api.tabletordercard.be';
     let cloudIp = await AsyncStorage.getItem('cloudIp');
-    let url = cloudIp != null ? cloudIp : rooturl;
+    let url = cloudIp != null ? cloudIp : ROOT_URL;
 
     setBaseUrl(url);
   };
