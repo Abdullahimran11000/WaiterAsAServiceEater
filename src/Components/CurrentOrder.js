@@ -39,6 +39,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
   const {decimal_places, tax_label, wait_time} =
     user.assignedLocations[0].Location;
 
+  const menuTags = 'MenuTags';
   const [totalTax, setTotalTax] = useState(0);
   const [subTotalAmount, setSubTotalAmount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -59,7 +60,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
         (element.itemOwnPrice * element.itemTax * element.itemQuantity) / 100;
 
       for (const key in element) {
-        if (element[key].id != -1) {
+        if (element[key].id != -1 && key != menuTags) {
           if (Array.isArray(element[key])) {
             element[key].map(item => {
               total_tax = total_tax + item.calculated_tax;
@@ -275,7 +276,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
             cartData.forEach(element => {
               for (const key in element) {
                 if (typeof element[key] == 'object') {
-                  if (Array.isArray(element[key])) {
+                  if (Array.isArray(element[key] && key != menuTags)) {
                     if (element[key].length > 0) {
                       let optionValues = [];
                       element[key].forEach(el => {
@@ -301,7 +302,8 @@ const CurrentOrder = ({route, handleBackPress}) => {
                     }
                   } else if (
                     typeof element[key].id === 'string' &&
-                    element[key].id.length > 0
+                    element[key].id.length > 0 &&
+                    key != menuTags
                   ) {
                     menuOptions.push({
                       menu_option_id: element[key].menuOptionId,
@@ -322,7 +324,7 @@ const CurrentOrder = ({route, handleBackPress}) => {
                     });
                     tax += element[key].calculated_tax;
                   } else {
-                    if (element[key].id > 0) {
+                    if (element[key].id > 0 && key != menuTags) {
                       menuOptions.push({
                         menu_option_id: element[key].menuOptionId,
                         option_id: element[key].optionId,
@@ -394,19 +396,12 @@ const CurrentOrder = ({route, handleBackPress}) => {
               .then(res => {
                 const {status, data} = res;
 
-                socket.emit('order_placed', {
-                  order_id: data?.order?.order_id,
-                });
-
-                socket.once('order_placed_status', () => {
-                  ToastAndroid.show(
-                    'order placed successfully',
-                    ToastAndroid.SHORT,
-                  );
-                });
-
                 if (status == 200 || status == 201) {
                   setIsLoading(false);
+
+                  socket.emit('order_placed', {
+                    order_id: data?.order?.order_id,
+                  });
 
                   showMessage({
                     message: 'Order Placed Successfully',
