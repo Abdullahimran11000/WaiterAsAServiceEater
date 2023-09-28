@@ -52,6 +52,18 @@ const TablesList = () => {
         .catch(error => {
           setIsLoading(false);
           console.log('GetLocationTablesErrorInsideTry: ', error);
+          if (Object.keys(error?.response?.data).length > 0) {
+            showMessage({
+              message: error.response.data.messgae,
+              type: 'warning',
+              duration: 1800,
+            });
+          } else {
+            showMessage({
+              message: error?.message,
+              type: 'warning',
+            });
+          }
         });
     } catch (error) {
       setIsLoading(false);

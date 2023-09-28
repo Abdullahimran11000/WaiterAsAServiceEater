@@ -121,11 +121,18 @@ const Login = ({navigation}) => {
         .catch(error => {
           setIsLoading(false);
           console.log('login api error ', error);
-
-          showMessage({
-            message: 'Login Failed',
-            type: 'warning',
-          });
+          if (Object.keys(error?.response?.data).length > 0) {
+            showMessage({
+              message: error.response.data.messgae,
+              type: 'warning',
+              duration: 1800,
+            });
+          } else {
+            showMessage({
+              message: 'Login Failed',
+              type: 'warning',
+            });
+          }
         });
     } catch (error) {
       setIsLoading(false);
