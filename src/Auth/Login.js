@@ -123,7 +123,7 @@ const Login = ({navigation}) => {
           console.log('login api error ', error);
           if (Object.keys(error?.response?.data).length > 0) {
             showMessage({
-              message: error.response.data.messgae,
+              message: error.response.data.message,
               type: 'warning',
               duration: 1800,
             });

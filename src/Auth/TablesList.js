@@ -54,7 +54,7 @@ const TablesList = () => {
           console.log('GetLocationTablesErrorInsideTry: ', error);
           if (Object.keys(error?.response?.data).length > 0) {
             showMessage({
-              message: error.response.data.messgae,
+              message: error.response.data.message,
               type: 'warning',
               duration: 1800,
             });
