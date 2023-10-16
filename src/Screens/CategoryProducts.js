@@ -19,6 +19,7 @@ import Header from '../Components/Header';
 
 import NewProductCard from '../Components/NewProductCard';
 import ProductDetails from './ProductDetails';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const CategoryProducts = ({navigation, route}) => {
   const dispatch = useDispatch();
@@ -48,6 +49,10 @@ const CategoryProducts = ({navigation, route}) => {
   used to set the loading state of the component to false. The useEffect hook also returns a cleanup
   function that resets some state variables. */
   useEffect(() => {
+    if (route?.params?.popupMenu != null) {
+      setViewFlag(true);
+    }
+
     const decompression = async () => {
       let decompressed = await inflate(route.params.categories);
       setCategories(JSON.parse(decompressed));
@@ -265,7 +270,7 @@ const CategoryProducts = ({navigation, route}) => {
             {showSearchedData == true && searchResult.length == 0 ? (
               <View style={styles.noResultBody}>
                 <Text style={styles.noResultBodyText}>
-                  No matching product found
+                  {StringsOfLanguages.No_matching_product_found}
                 </Text>
               </View>
             ) : showSearchedData ? (

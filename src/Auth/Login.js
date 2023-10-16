@@ -24,6 +24,7 @@ import axios from 'axios';
 import Colors from '../Assets/Colors';
 import {ROOT_URL} from '../Server/config';
 import {getToken} from '../Utils/PNHelper';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const iconSize = 30;
 
@@ -197,7 +198,7 @@ const Login = ({navigation}) => {
   ) : (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Sign In</Text>
+        <Text style={styles.headerText}>{StringsOfLanguages.Sign_In}</Text>
       </View>
 
       <View style={styles.logoContainer}>
@@ -210,7 +211,9 @@ const Login = ({navigation}) => {
 
       <View style={styles.bodyContainer}>
         <View style={styles.emailWrapper}>
-          <Text style={styles.emailHeadingText}>Email Address</Text>
+          <Text style={styles.emailHeadingText}>
+            {StringsOfLanguages.Email_Address}
+          </Text>
           <View style={styles.emailContainer}>
             <Icon name="email" size={iconSize} color={Colors.primary} />
             <TextInput
@@ -225,7 +228,9 @@ const Login = ({navigation}) => {
         </View>
 
         <View style={styles.emailWrapper}>
-          <Text style={styles.emailHeadingText}>Password</Text>
+          <Text style={styles.emailHeadingText}>
+            {StringsOfLanguages.Password}
+          </Text>
           <View style={styles.emailContainer}>
             <Foundation name="key" size={iconSize} color={Colors.primary} />
             <TextInput
@@ -252,7 +257,7 @@ const Login = ({navigation}) => {
         </View>
 
         <TouchableOpacity style={styles.loginBtn} onPress={handleLoginPress}>
-          <Text style={styles.loginBtnText}>Sign In</Text>
+          <Text style={styles.loginBtnText}>{StringsOfLanguages.Sign_In}</Text>
         </TouchableOpacity>
 
         {ROOT_URL && cloudIp == '' ? (
@@ -263,7 +268,7 @@ const Login = ({navigation}) => {
                 marginVertical: 25,
                 fontWeight: 'bold',
               }}>
-              You're connected with cloud server.
+              {StringsOfLanguages.Cloud_Server}
             </Text>
             <TouchableOpacity
               style={{
@@ -276,7 +281,7 @@ const Login = ({navigation}) => {
               }}
               onPress={() => setModalVisible(true)}>
               <Text style={{fontSize: 16, color: Colors.white}}>
-                Update Server
+                {StringsOfLanguages.Update_Server}
               </Text>
             </TouchableOpacity>
           </>
@@ -288,7 +293,7 @@ const Login = ({navigation}) => {
                 marginVertical: 25,
                 fontWeight: 'bold',
               }}>
-              You're connected with local server.
+              {StringsOfLanguages.Local_Server}
             </Text>
             <TouchableOpacity
               style={{
@@ -301,7 +306,7 @@ const Login = ({navigation}) => {
               }}
               onPress={() => setModalVisible(true)}>
               <Text style={{fontSize: 16, color: Colors.white}}>
-                Update Server
+                {StringsOfLanguages.Update_Server}
               </Text>
             </TouchableOpacity>
           </>
@@ -340,7 +345,7 @@ const Login = ({navigation}) => {
                   }}
                   onPress={handleUpdateServer}>
                   <Text style={{fontSize: 14, color: Colors.white}}>
-                    Submit
+                    {StringsOfLanguages.Submit}
                   </Text>
                 </TouchableOpacity>
               </View>

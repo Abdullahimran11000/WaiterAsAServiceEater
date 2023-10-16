@@ -19,6 +19,7 @@ import CountDown from 'react-native-countdown-component';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../Assets/Colors';
 import moment from 'moment';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const Header = props => {
   const dispatch = useDispatch();
@@ -284,7 +285,7 @@ const Header = props => {
                     orders.length == 0 || flag ? Colors.grey : Colors.white,
                 },
               ]}>
-              Pay Now
+              {StringsOfLanguages.Pay_Now}
             </Text>
           )}
         </Pressable>
@@ -293,7 +294,9 @@ const Header = props => {
           {waiterLoader ? (
             <ActivityIndicator size="small" color={Colors.white} />
           ) : (
-            <Text style={styles.waiterTxt}>Call waiter</Text>
+            <Text style={styles.waiterTxt}>
+              {StringsOfLanguages.Call_waiter}
+            </Text>
           )}
         </Pressable>
 

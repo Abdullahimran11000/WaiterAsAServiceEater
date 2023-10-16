@@ -15,6 +15,7 @@ import Colors from '../Assets/Colors';
 import {getTablesList} from '../Regex/SessionCheck';
 import {SocketContext} from '../Context/SocketContext';
 import {paymentRequest} from '../Server/Methods/Listing';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const OrdersHistory = ({navigation}) => {
   const dispatch = useDispatch();
@@ -134,7 +135,10 @@ const OrdersHistory = ({navigation}) => {
           return (
             <View key={index} style={styles.allOrdersWrapper}>
               <View style={styles.orderHeaderContainer}>
-                <Text style={styles.statText}>Order # {index + 1}</Text>
+                <Text style={styles.statText}>
+                  {' '}
+                  {StringsOfLanguages.Order + '#' + index + 1}
+                </Text>
               </View>
 
               {order.map((item, itemIndex) => {

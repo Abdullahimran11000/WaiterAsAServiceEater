@@ -3,6 +3,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Path from '../Utils/Path';
 import Colors from '../Assets/Colors';
 import FastImage from 'react-native-fast-image';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const ProductCard = ({item, price, onNamePress, onCartPress}) => {
   const baseURL = Path.imagePath;
@@ -27,7 +28,9 @@ const ProductCard = ({item, price, onNamePress, onCartPress}) => {
             activeOpacity={0.7}
             style={styles.addToCartBtn}
             onPress={onCartPress}>
-            <Text style={styles.addToCartBtnText}>Add to cart</Text>
+            <Text style={styles.addToCartBtnText}>
+              {StringsOfLanguages.Add_to_cart}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

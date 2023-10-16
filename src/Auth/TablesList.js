@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Colors from '../Assets/Colors';
 import {GetLocationTables, StartSession} from '../Server/Methods/Listing';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const TablesList = () => {
   const dispatch = useDispatch();
@@ -155,11 +156,9 @@ const TablesList = () => {
       <View style={styles.locationInfoContainer}>
         <Text
           style={[styles.headerText, {color: layout_setting?.h2_text_color}]}>
-          Tables List
+          {StringsOfLanguages.Tables_List}
         </Text>
-        <Text style={{color: Colors.black}}>
-          Select a table to start session
-        </Text>
+        <Text style={{color: Colors.black}}>{StringsOfLanguages.Session}</Text>
       </View>
 
       <ScrollView
@@ -211,7 +210,9 @@ const TablesList = () => {
         <TouchableOpacity
           style={[styles.startSessionButton, bgStyle]}
           onPress={handleStartSessionPress}>
-          <Text style={styles.startSessionText}>Start Session</Text>
+          <Text style={styles.startSessionText}>
+            {StringsOfLanguages.Start_Session}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity

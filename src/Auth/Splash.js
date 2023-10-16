@@ -5,6 +5,7 @@ import {useSelector} from 'react-redux';
 import FastImage from 'react-native-fast-image';
 
 import {version} from '../../package.json';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const moveForward = navigation => {
   const {user, session} = useSelector(store => store.sessionReducer);
@@ -30,7 +31,9 @@ const Splash = ({navigation}) => {
         style={styles.logo}
       />
 
-      <Text style={styles.versionText}>Version: {version}</Text>
+      <Text style={styles.versionText}>
+        {StringsOfLanguages.Version}: {version}
+      </Text>
     </View>
   );
 };

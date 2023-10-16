@@ -6,6 +6,7 @@ import {
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 
 import {deflate} from 'react-native-gzip';
@@ -18,6 +19,9 @@ import Colors from '../Assets/Colors';
 import FastImage from 'react-native-fast-image';
 import CategoryCard from '../Components/CategoryCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
+import {lang} from '../Language/LanguageArray';
+import LanguageDropDown from '../Components/LanguageDropDown';
 
 const Categories = ({navigation}) => {
   const {user} = useSelector(store => store.sessionReducer);
@@ -130,10 +134,10 @@ const Categories = ({navigation}) => {
     </View>
   ) : (
     <View style={styles.container}>
-      <View style={[styles.headerContainer, bgStyle]}>
+      <View style={[styles.headerContainer, bgStyle, {flexDirection: 'row'}]}>
         <Text
           style={[styles.headerText, {color: layout_setting?.h2_text_color}]}>
-          Categories
+          {StringsOfLanguages.Categories}
         </Text>
       </View>
 
@@ -165,6 +169,16 @@ const Categories = ({navigation}) => {
             />
           </View>
         </View>
+        <View style={{alignSelf: 'flex-end', marginRight: 10}}>
+          <LanguageDropDown
+            onPress={() => {
+              setIsLoading(true);
+              setTimeout(() => {
+                setIsLoading(false);
+              }, 1000);
+            }}
+          />
+        </View>
 
         <View style={styles.categoryHeader}>
           <Text
@@ -172,7 +186,7 @@ const Categories = ({navigation}) => {
               styles.categoryHeaderText,
               {color: layout_setting?.h2_text_color},
             ]}>
-            SELECT A CATEGORY
+            {StringsOfLanguages.SELECT_A_CATEGORY}
           </Text>
         </View>
 

@@ -9,6 +9,8 @@ import {
 import {useSelector} from 'react-redux';
 
 import Colors from '../Assets/Colors';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
+import LanguageDropDown from '../Components/LanguageDropDown';
 
 const Terms = ({navigation}) => {
   const {user} = useSelector(store => store.sessionReducer);
@@ -24,7 +26,7 @@ const Terms = ({navigation}) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={[styles.headerContainer, bgStyle]}>
-        <Text style={styles.headerText}>Welcome Text</Text>
+        <Text style={styles.headerText}>{StringsOfLanguages.Welcome_Text}</Text>
       </View>
 
       <Text style={styles.termsText}>{terms_and_conditions}</Text>
@@ -32,7 +34,7 @@ const Terms = ({navigation}) => {
       <TouchableOpacity
         style={[styles.acceptBtn, bgStyle]}
         onPress={acceptTerms}>
-        <Text style={styles.acceptBtnText}>Accept</Text>
+        <Text style={styles.acceptBtnText}>{StringsOfLanguages.Accept}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

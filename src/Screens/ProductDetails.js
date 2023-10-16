@@ -21,6 +21,7 @@ import Colors from '../Assets/Colors';
 import Swiper from 'react-native-swiper';
 import NewProductCard from '../Components/NewProductCard';
 import {useFocusEffect} from '@react-navigation/native';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const ProductDetails = ({
   baseURL,
@@ -55,6 +56,7 @@ const ProductDetails = ({
     MenuMedia,
     MenuItemRecommendations,
     MenuTags,
+    nutri_score,
   } = product;
 
   const [quantity, setQuantity] = useState(1);
@@ -65,6 +67,29 @@ const ProductDetails = ({
   const [selectedOptions, setSelectedOptions] = useState({});
   const [basePriceValue, setBasePriceValue] = useState(menu_price);
   const [recItems, setRecItems] = useState([]);
+
+  const [nutriType, setNutriType] = useState([
+    {
+      type: 'A',
+      color: '#1D8E39',
+    },
+    {
+      type: 'B',
+      color: '#9BC432',
+    },
+    {
+      type: 'C',
+      color: '#FBBA05',
+    },
+    {
+      type: 'D',
+      color: '#E96120',
+    },
+    {
+      type: 'E',
+      color: '#D32024',
+    },
+  ]);
 
   /* The above code is using the `useEffect` hook in React to iterate over an array of `MenuOptions`
   and check if certain conditions are met for each element. If an element has a `base_price` value
@@ -82,13 +107,13 @@ const ProductDetails = ({
   useFocusEffect(
     React.useCallback(() => {
       let oldrec = [];
-      for (var i = 0; i < MenuItemRecommendations.length; i++) {
-        for (var a = 0; a < mainCategories.length; a++) {
+      for (var i = 0; i < MenuItemRecommendations?.length; i++) {
+        for (var a = 0; a < mainCategories?.length; a++) {
           if (
             MenuItemRecommendations[i].Menu.menu_category_id ==
             mainCategories[a].category_id
           ) {
-            for (var b = 0; b < mainCategories[a].Menus.length; b++) {
+            for (var b = 0; b < mainCategories[a].Menus?.length; b++) {
               if (
                 MenuItemRecommendations[i].recommendation_item_id ==
                 mainCategories[a].Menus[b].menu_id
@@ -101,7 +126,7 @@ const ProductDetails = ({
           }
         }
       }
-      if (oldrec.length === 0) {
+      if (oldrec?.length === 0) {
         setRecItems([]);
       }
     }, [product]),
@@ -469,7 +494,7 @@ const ProductDetails = ({
         ...selectedOptions,
       };
 
-      if (Object.keys(selectedOptions).length == 0) {
+      if (Object.keys(selectedOptions)?.length == 0) {
         cartLogicWithNoDescription(cartData, item, ifExists => {
           if (!ifExists) {
             handleAddToRedux(item);
@@ -793,44 +818,83 @@ const ProductDetails = ({
         contentContainerStyle={{flexGrow: 1}}
         showsVerticalScrollIndicator={false}>
         <View style={styles.productInfoContainer}>
-          {MenuMedia.length == 0 ? (
-            <View style={styles.productImageContainer}>
-              <FastImage
-                source={{uri: baseURL + '/restaurant_data/' + menu_photo}}
-                style={styles.productImage}
-                resizeMode="stretch"
-              />
-            </View>
-          ) : (
-            <Swiper
-              removeClippedSubviews={false}
-              autoplayTimeout={3.5}
-              style={{height: WINDOW_WIDTH < 420 ? 125 : 220}}
-              showsButtons={true}
-              showsPagination={false}
-              autoplay={true}
-              nextButton={
-                <AntDesign name="caretright" size={24} color={'white'} />
-              }
-              prevButton={
-                <AntDesign name="caretleft" size={24} color={'white'} />
-              }>
-              {MenuMedia.map((item, index) => {
-                return (
-                  <View style={styles.productImageContainer}>
-                    <FastImage
-                      key={index}
-                      source={{
-                        uri: baseURL + '/restaurant_data/' + item.menu_photo,
-                      }}
-                      style={styles.productImage}
-                      resizeMode="stretch"
-                    />
-                  </View>
-                );
-              })}
-            </Swiper>
-          )}
+          <View>
+            {MenuMedia?.length == 0 ? (
+              <View style={styles.productImageContainer}>
+                <FastImage
+                  source={{uri: baseURL + '/restaurant_data/' + menu_photo}}
+                  style={styles.productImage}
+                  resizeMode="stretch"
+                />
+              </View>
+            ) : (
+              <>
+                <Swiper
+                  removeClippedSubviews={false}
+                  autoplayTimeout={3.5}
+                  style={{height: WINDOW_WIDTH < 420 ? 125 : 220}}
+                  showsButtons={true}
+                  showsPagination={false}
+                  autoplay={true}
+                  nextButton={
+                    <AntDesign name="caretright" size={24} color={'white'} />
+                  }
+                  prevButton={
+                    <AntDesign name="caretleft" size={24} color={'white'} />
+                  }>
+                  {MenuMedia.map((item, index) => {
+                    return (
+                      <View style={styles.productImageContainer}>
+                        <FastImage
+                          key={index}
+                          source={{
+                            uri:
+                              baseURL + '/restaurant_data/' + item.menu_photo,
+                          }}
+                          style={styles.productImage}
+                          resizeMode="stretch"
+                        />
+                      </View>
+                    );
+                  })}
+                </Swiper>
+              </>
+            )}
+            {nutri_score != null ? (
+              <View style={styles.nutriContainer}>
+                <Text style={{fontSize: 14, fontWeight: '600'}}>
+                  {StringsOfLanguages.NUTRI_SCORE}
+                </Text>
+                <View style={styles.nutriInnerContainer}>
+                  {nutriType?.map(item => {
+                    return (
+                      <View
+                        style={{
+                          backgroundColor: item?.color,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          height: nutri_score == item.type ? 48 : 40,
+                          width: nutri_score == item.type ? 25 : 20,
+                          borderRadius: nutri_score == item.type ? 20 : 0,
+                          marginHorizontal: nutri_score == item.type ? 1 : 0,
+                        }}>
+                        <Text
+                          style={{
+                            color: nutri_score == item.type ? 'white' : 'white',
+                            opacity: nutri_score == item.type ? 1 : 0.7,
+                            fontSize: nutri_score == item.type ? 18 : 16,
+                            fontWeight:
+                              nutri_score == item.type ? '900' : '600',
+                          }}>
+                          {item?.type}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            ) : null}
+          </View>
 
           <View style={styles.productDescriptionContainer}>
             <View style={styles.productNameContainer}>
@@ -854,17 +918,19 @@ const ProductDetails = ({
             </View>
 
             <Text style={styles.productDescription}>
-              {menu_description || 'No description added'}
+              {menu_description || StringsOfLanguages.No_Description_Added}
             </Text>
           </View>
         </View>
 
         <View style={styles.horizontalLine} />
 
-        {MenuAllergyItems.length > 0 && (
+        {MenuAllergyItems?.length > 0 && (
           <View style={styles.menuOptionsWrapper}>
             <View style={styles.menuOptionTitleContainer}>
-              <Text style={styles.productNameText}>Allergens</Text>
+              <Text style={styles.productNameText}>
+                {StringsOfLanguages.Allergens}
+              </Text>
             </View>
 
             <View style={{flexDirection: 'row'}}>
@@ -894,7 +960,9 @@ const ProductDetails = ({
                   {menu.Option.option_name}
                 </Text>
                 {menu.required == 1 && (
-                  <Text style={styles.requiredText}>REQUIRED</Text>
+                  <Text style={styles.requiredText}>
+                    {StringsOfLanguages.REQUIRED}
+                  </Text>
                 )}
               </View>
 
@@ -910,7 +978,9 @@ const ProductDetails = ({
         })}
 
         <View style={styles.menuOptionsWrapper}>
-          <Text style={styles.productNameText}>Add Special Instructions</Text>
+          <Text style={styles.productNameText}>
+            {StringsOfLanguages.Add_Special_Instructions}
+          </Text>
 
           <TextInput
             value={instructions}
@@ -921,10 +991,12 @@ const ProductDetails = ({
           />
         </View>
 
-        {recItems.length > 0 && (
+        {recItems?.length > 0 && (
           <View style={styles.menuOptionsWrapper}>
             <View style={styles.menuOptionTitleContainer}>
-              <Text style={styles.productNameText}>Recommended Item</Text>
+              <Text style={styles.productNameText}>
+                {StringsOfLanguages.Recommended_Item}
+              </Text>
             </View>
 
             <View style={styles.productDetailsWrapper}>
@@ -971,7 +1043,9 @@ const ProductDetails = ({
         <TouchableOpacity
           style={[styles.orderBtn, bgStyle]}
           onPress={handleAddToCart}>
-          <Text style={styles.orderBtnText}>ADD TO ORDER</Text>
+          <Text style={styles.orderBtnText}>
+            {StringsOfLanguages.ADD_TO_ORDER}
+          </Text>
         </TouchableOpacity>
         <View>
           <Text
@@ -980,7 +1054,7 @@ const ProductDetails = ({
               {color: layout_setting?.h2_text_color},
             ]}>
             €{' '}
-            {displayPrice.length == 0
+            {displayPrice?.length == 0
               ? menu_price.toFixed(decimal_places)
               : newPrice.toFixed(decimal_places)}
           </Text>
@@ -1205,4 +1279,20 @@ const styles = StyleSheet.create({
   },
 
   orderBtnText: {fontSize: 18, color: Colors.white},
+  nutriContainer: {
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 10,
+    width: 120,
+    justifyContent: 'center',
+    position: 'absolute',
+    left: 15,
+    bottom: 10,
+  },
+  nutriInnerContainer: {
+    flexDirection: 'row',
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

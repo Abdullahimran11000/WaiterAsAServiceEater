@@ -21,6 +21,7 @@ import {WINDOW_WIDTH} from '../Utils/Size';
 import {getTablesList} from '../Regex/SessionCheck';
 import {PlaceOrder} from '../Server/Methods/Listing';
 import {SocketContext} from '../Context/SocketContext';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const CurrentOrder = ({route, handleBackPress}) => {
   const baseURL = route?.params?.baseURL;
@@ -521,7 +522,8 @@ const CurrentOrder = ({route, handleBackPress}) => {
                   {order.itemName.replaceAll('�', '')}
                 </Text>
                 <Text style={styles.productDescription}>
-                  {order.itemDescription || 'No Description Added'}
+                  {order.itemDescription ||
+                    StringsOfLanguages.No_Description_Added}
                 </Text>
               </View>
 
@@ -567,7 +569,9 @@ const CurrentOrder = ({route, handleBackPress}) => {
 
       <View style={styles.statsWrapper}>
         <View style={styles.statContainer}>
-          <Text style={styles.productPriceText}>Subtotal</Text>
+          <Text style={styles.productPriceText}>
+            {StringsOfLanguages.Subtotal}
+          </Text>
           <Text style={styles.productPriceText}>
             € {subTotalAmount.toFixed(decimal_places)}
           </Text>
@@ -584,7 +588,9 @@ const CurrentOrder = ({route, handleBackPress}) => {
           disabled={cartData.length == 0 ? true : false}
           style={[styles.checkoutButtonContainer, {backgroundColor: basecolor}]}
           onPress={handlePlaceOrder}>
-          <Text style={styles.checkoutText}>Place Order</Text>
+          <Text style={styles.checkoutText}>
+            {StringsOfLanguages.Place_Order}
+          </Text>
         </Pressable>
       </View>
     </View>

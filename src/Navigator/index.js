@@ -65,11 +65,11 @@ const StackScreens = () => {
       value={socket_connection(user_id, role, location_id, token, cloudIp)}>
       <SocketContext.Consumer>
         {socket => {
-          socket.on('test', res => {
+          socket.on('receive_popup_trigger', res => {
             if (Object.keys(res).length > 0) {
               dispatch({
                 type: 'SET_POPUP_DATA',
-                payload: res.data,
+                payload: res,
               });
               setPopup(true);
             }

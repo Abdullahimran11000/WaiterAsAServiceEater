@@ -21,6 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SocketContext} from '../Context/SocketContext';
 import StarRating from 'react-native-star-rating';
 import {GetSurveyQuestionList} from '../Server/Methods/Listing';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const Servey = () => {
   const {session} = useSelector(store => store.sessionReducer);
@@ -231,7 +232,7 @@ const Servey = () => {
       <View style={styles.container}>
         <View
           style={[styles.headerContainer, {backgroundColor: Colors.primary}]}>
-          <Text style={styles.headerText}>Survey</Text>
+          <Text style={styles.headerText}>{StringsOfLanguages.Survey}</Text>
         </View>
         <ScrollView
           style={styles.serveyContainer}
@@ -288,7 +289,7 @@ const Servey = () => {
                   fontSize: 18,
                 },
               ]}>
-              Submit Survey
+              {StringsOfLanguages.Submit_Survey}
             </Text>
           </TouchableOpacity>
         </View>
