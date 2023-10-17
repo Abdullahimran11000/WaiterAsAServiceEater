@@ -16,8 +16,10 @@ import {getTablesList} from '../Regex/SessionCheck';
 import {SocketContext} from '../Context/SocketContext';
 import {paymentRequest} from '../Server/Methods/Listing';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const OrdersHistory = ({navigation}) => {
+  const {isLandscape} = useOrientation();
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
 
@@ -174,7 +176,11 @@ const OrdersHistory = ({navigation}) => {
         })}
       </ScrollView>
 
-      <View style={styles.bottomButtonWrapper}>
+      <View
+        style={[
+          styles.bottomButtonWrapper,
+          {width: isLandscape ? '30%' : '90%', alignSelf: 'center'},
+        ]}>
         <Pressable
           disabled={orders.length == 0 || flag ? true : false}
           style={[
@@ -243,5 +249,5 @@ const styles = StyleSheet.create({
   scrollViewStyle: {flex: 0.9},
   orderItemContainer: {flex: 0.95},
   scrollViewContentStyle: {flexGrow: 1},
-  bottomButtonWrapper: {flex: 0.1, justifyContent: 'center'},
+  bottomButtonWrapper: {justifyContent: 'center'},
 });

@@ -7,8 +7,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../Assets/Colors';
 import CurrentOrder from '../Components/CurrentOrder';
 import OrdersHistory from '../Components/OrdersHistory';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const Cart = ({navigation, route}) => {
+  const {isLandscape} = useOrientation();
   const {user} = useSelector(store => store.sessionReducer);
 
   const {layout_setting} = user;
@@ -38,7 +40,7 @@ const Cart = ({navigation, route}) => {
         <Text style={styles.headerText}>{tabs[selectedTab]}</Text>
       </View>
 
-      <View style={styles.tabWraper}>
+      <View style={[styles.tabWraper, {flex: isLandscape ? 0.2 : 0.1}]}>
         {tabs.map((tab, index) => {
           return (
             <Pressable
@@ -97,7 +99,6 @@ const styles = StyleSheet.create({
   },
 
   tabWraper: {
-    flex: 0.1,
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 10,

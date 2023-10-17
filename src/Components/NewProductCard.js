@@ -8,8 +8,11 @@ import Colors from '../Assets/Colors';
 import Feather from 'react-native-vector-icons/Feather';
 import Swiper from 'react-native-swiper';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const NewProductCard = ({baseURL, item, price, navigation, setViewFlag}) => {
+  const {isLandscape} = useOrientation();
+
   const dispatch = useDispatch();
 
   const onNamePress = () => {
@@ -25,7 +28,10 @@ const NewProductCard = ({baseURL, item, price, navigation, setViewFlag}) => {
   const {MenuMedia} = item;
   return (
     <TouchableOpacity
-      style={item.highlighted ? styles.containerHighlighted : styles.container}
+      style={[
+        item.highlighted ? styles.containerHighlighted : styles.container,
+        {width: isLandscape ? '32.5%' : '49%'},
+      ]}
       onPress={onNamePress}>
       {MenuMedia.length === 0 ? (
         <FastImage
@@ -110,14 +116,14 @@ export default NewProductCard;
 const styles = StyleSheet.create({
   container: {
     height: 190,
-    width: '49%',
+
     borderRadius: 1,
     marginVertical: 6,
     overflow: 'hidden',
   },
   containerHighlighted: {
     height: 190,
-    width: '49%',
+
     borderRadius: 1,
     marginVertical: 6,
     overflow: 'hidden',

@@ -18,8 +18,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../Assets/Colors';
 import {GetLocationTables, StartSession} from '../Server/Methods/Listing';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const TablesList = () => {
+  const {isLandscape} = useOrientation();
   const dispatch = useDispatch();
   const {user} = useSelector(store => store.sessionReducer);
   const location_id = user?.role[0]?.staff_location_id;
@@ -180,6 +182,10 @@ const TablesList = () => {
                       selectedTable?.table_name == table.table_name &&
                       layout_setting?.highlight_color,
                   },
+                  {
+                    height: isLandscape ? 100 : 130,
+                    width: isLandscape ? '10%' : '15%',
+                  },
                 ]}
                 onPress={() => handleTablePress(table)}
                 disabled={!table.is_table_available}>
@@ -206,9 +212,21 @@ const TablesList = () => {
         </View>
       </ScrollView>
 
-      <View style={styles.bottomContainer}>
+      <View
+        style={[
+          styles.bottomContainer,
+          {
+            flex: isLandscape ? 0.15 : 0.1,
+            width: isLandscape ? '40%' : '100%',
+            alignSelf: 'center',
+          },
+        ]}>
         <TouchableOpacity
-          style={[styles.startSessionButton, bgStyle]}
+          style={[
+            styles.startSessionButton,
+            bgStyle,
+            {marginHorizontal: isLandscape ? 10 : 0},
+          ]}
           onPress={handleStartSessionPress}>
           <Text style={styles.startSessionText}>
             {StringsOfLanguages.Start_Session}
@@ -261,7 +279,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
     letterSpacing: 2,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginVertical: 5,
     color: Colors.black,
   },
 
@@ -274,9 +292,8 @@ const styles = StyleSheet.create({
   },
 
   tablesContainer: {
-    height: 130,
     padding: 10,
-    width: '15%',
+
     borderRadius: 10,
     marginVertical: 10,
     alignItems: 'center',
@@ -285,9 +302,7 @@ const styles = StyleSheet.create({
   },
 
   selectedTablesContainer: {
-    height: 130,
     padding: 10,
-    width: '15%',
     borderWidth: 3,
     borderRadius: 10,
     marginVertical: 10,
@@ -312,7 +327,6 @@ const styles = StyleSheet.create({
   },
 
   bottomContainer: {
-    flex: 0.1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
