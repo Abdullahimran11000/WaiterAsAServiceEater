@@ -35,7 +35,7 @@ const NewProductCard = ({baseURL, item, price, navigation, setViewFlag}) => {
       onPress={onNamePress}>
       {MenuMedia.length === 0 ? (
         <FastImage
-          resizeMode={isLandscape ? 'stretch' : 'cover'}
+          resizeMode="stretch"
           style={styles.image}
           source={{uri: baseURL + '/restaurant_data/' + item?.menu_photo}}>
           <View style={styles.rowView}>
