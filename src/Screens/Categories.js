@@ -154,18 +154,18 @@ const Categories = ({navigation}) => {
               uri: baseURL + '/restaurant_data/' + banners[0]?.image,
             }}
             style={styles.bannerLeft}
-            resizeMode="cover"
+            resizeMode="stretch"
           />
           <View style={styles.bannerLeft}>
             <FastImage
               source={{uri: baseURL + '/restaurant_data/' + banners[1]?.image}}
               style={styles.bannerRight}
-              resizeMode="cover"
+              resizeMode="stretch"
             />
             <FastImage
               source={{uri: baseURL + '/restaurant_data/' + banners[2]?.image}}
               style={styles.bannerRight}
-              resizeMode="cover"
+              resizeMode="stretch"
             />
           </View>
         </View>
