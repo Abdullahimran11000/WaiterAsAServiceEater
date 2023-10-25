@@ -41,6 +41,7 @@ const CategoryProducts = ({navigation, route}) => {
   const [currentCategory, setCurrentCategory] = useState(current);
   const [showSearchedData, setShowSearchedData] = useState(false);
   const [checkCart, setCheckCart] = useState(false);
+  const [animation, setAnimation] = useState(false);
 
   /* The above code is a React functional component that uses the useEffect hook. It decompresses a
   string of compressed data (route.params.categories) using the inflate function, then parses the
@@ -233,6 +234,8 @@ const CategoryProducts = ({navigation, route}) => {
           name={currentCategory.name}
           viewFlag={viewFlag}
           setViewFlag={setViewFlag}
+          animation={animation}
+          setAnimation={setAnimation}
         />
 
         {viewFlag ? (
@@ -241,6 +244,7 @@ const CategoryProducts = ({navigation, route}) => {
             baseURL={baseURL}
             setViewFlag={setViewFlag}
             setCheckCart={setCheckCart}
+            setAnimation={setAnimation}
           />
         ) : (
           <>
