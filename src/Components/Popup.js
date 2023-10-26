@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {deflate, inflate} from 'react-native-gzip';
 import {useOrientation} from '../hooks/useOrientaion';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const Popup = ({handlePopClose}) => {
   const {isLandscape} = useOrientation();
@@ -153,7 +154,7 @@ const Popup = ({handlePopClose}) => {
                             paddingHorizontal: 10,
                           }}>
                           <Text style={{color: Colors.black, padding: 6}}>
-                            Go to Details
+                            {StringsOfLanguages.Go_to_Details}
                           </Text>
                         </TouchableOpacity>
                       </>
