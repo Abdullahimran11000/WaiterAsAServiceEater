@@ -93,7 +93,8 @@ const Header = props => {
     if (viewFlag) {
       setViewFlag(false);
     } else {
-      navigation.goBack();
+      console.log('REPLACED *******************')
+      navigation.goBack('');
     }
   };
 

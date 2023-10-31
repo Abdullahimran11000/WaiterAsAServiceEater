@@ -1,4 +1,10 @@
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useState} from 'react';
 import {lang} from '../Language/LanguageArray';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
@@ -6,9 +12,11 @@ import SelectDropdown from 'react-native-select-dropdown';
 import Colors from '../Assets/Colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {WINDOW_WIDTH} from '../Utils/Size';
 
 const LanguageDropDown = props => {
-  const [language, setLanguage] = useState('Language');
+  const [language, setLanguage] = useState('');
 
   const storeData = async item => {
     try {
@@ -18,15 +26,25 @@ const LanguageDropDown = props => {
     }
   };
 
-  useFocusEffect(() => {
-    AsyncStorage.getItem('Language')
-      .then(item => {
-        setLanguage(item);
-      })
-      .catch(error => {
-        console.log('get language error ', error);
-      });
-  }, []);
+  const setIcon = () => {
+    return (
+      <View style={{left: 8, alignItems: 'center', justifyContent: 'center'}}>
+        <Icon name={'flag-variant'} size={40} color={Colors.white} />
+      </View>
+    );
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      AsyncStorage.getItem('Language')
+        .then(item => {
+          setLanguage(item);
+        })
+        .catch(error => {
+          console.log('get language error ', error);
+        });
+    }, []),
+  );
 
   return (
     <View>
@@ -44,10 +62,20 @@ const LanguageDropDown = props => {
         rowTextForSelection={(item, index) => {
           return item.longform;
         }}
-        defaultButtonText={language}
+        // defaultValue={'ENGLISH'}
+        defaultButtonText={
+          <Text style={{color: Colors.white}}>{language}</Text>
+        }
+        renderDropdownIcon={setIcon}
         rowTextStyle={{fontSize: 14}}
-        buttonTextStyle={{fontSize: 12}}
-        buttonStyle={{width: 160, borderColor: Colors.primary, borderWidth: 1}}
+        buttonStyle={{
+          width: 150,
+          borderColor: Colors.primary,
+          borderWidth: 1,
+          backgroundColor: Colors.primary,
+          borderRadius: 10,
+        }}
+        dropdownStyle={{width: 100, borderRadius: 5}}
       />
     </View>
   );
