@@ -28,6 +28,7 @@ const ProductDetails = ({
   setViewFlag,
   mainCategories,
   setCheckCart,
+  setAnimation,
 }) => {
   const dispatch = useDispatch();
 
@@ -57,7 +58,12 @@ const ProductDetails = ({
     MenuItemRecommendations,
     MenuTags,
     nutri_score,
+    MenuIcons,
   } = product;
+
+  console.log('====================================');
+  console.log('product ', product);
+  console.log('====================================');
 
   const [quantity, setQuantity] = useState(1);
   const [newPrice, setNewPrice] = useState(0);
@@ -476,6 +482,7 @@ const ProductDetails = ({
    * option is selected.
    */
   const handleAddToCart = () => {
+    setAnimation(true);
     setCheckCart(true);
 
     if (selectedOptions[hasRequired]?.id != -1) {
@@ -894,6 +901,18 @@ const ProductDetails = ({
                 </View>
               </View>
             ) : null}
+            {MenuIcons?.length != 0 ? (
+              <View style={{position: 'absolute', right: 10, bottom: 10}}>
+                <FastImage
+                  source={{
+                    uri:
+                      baseURL + '/public/' + JSON.parse(MenuIcons[0]?.iconPath),
+                  }}
+                  style={{width: 40, height: 40}}
+                  // resizeMode="stretch"
+                />
+              </View>
+            ) : null}
           </View>
 
           <View style={styles.productDescriptionContainer}>
@@ -1042,7 +1061,9 @@ const ProductDetails = ({
 
         <TouchableOpacity
           style={[styles.orderBtn, bgStyle]}
-          onPress={handleAddToCart}>
+          onPress={() => {
+            handleAddToCart();
+          }}>
           <Text style={styles.orderBtnText}>
             {StringsOfLanguages.ADD_TO_ORDER}
           </Text>

@@ -12,7 +12,7 @@ import {
 import {deflate} from 'react-native-gzip';
 import {useSelector} from 'react-redux';
 import {GetLocationCategories} from '../Server/Methods/Listing';
-import {WINDOW_HEIGHT} from '../Utils/Size';
+import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../Utils/Size';
 import {ROOT_URL} from '../Server/config';
 
 import Colors from '../Assets/Colors';
@@ -59,15 +59,19 @@ const Categories = ({navigation}) => {
     baseURL === '' ? null : apiCall();
   }, [baseURL]);
 
+
   /**
    * The function makes an API call to retrieve location categories, dish tags, and banners, and sets
    * them as state variables.
    */
   const apiCall = async () => {
     if (baseURL === '') {
+      console.log('if block');
       setRefreshing(false);
     } else {
+      console.log('else block');
       try {
+        setRefreshing(true)
         await GetLocationCategories(location_id)
           .then(res => {
             const {status, data} = res;
@@ -75,7 +79,6 @@ const Categories = ({navigation}) => {
               setCategories(data?.categories);
               setDishTags(data?.dish_tags);
               setBanners(data?.banners);
-
               setIsLoading(false);
               setRefreshing(false);
             }
@@ -85,6 +88,7 @@ const Categories = ({navigation}) => {
           })
           .finally(() => {
             setIsLoading(false);
+            setBaseUrlFunction()
           });
       } catch (error) {
         setIsLoading(false);
@@ -100,10 +104,15 @@ const Categories = ({navigation}) => {
   function has no dependencies, so it will only be created once. This can help improve performance
   by reducing unnecessary re-renders. The `onRefresh` function is passed as a prop to the
   `RefreshControl` component in the `ScrollView` to handle the pull-to-refresh functionality. */
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    apiCall();
+  
+  useEffect(() => {
+    onRefresh()
   }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true)
+    apiCall()
+  }
 
   /**
    * The function handles a category press event and navigates to a screen displaying products within
@@ -134,42 +143,12 @@ const Categories = ({navigation}) => {
     </View>
   ) : (
     <View style={styles.container}>
-      <View style={[styles.headerContainer, bgStyle, {flexDirection: 'row'}]}>
+      <View style={[styles.headerContainer, bgStyle, {flexDirection: 'row',justifyContent:'space-between',paddingHorizontal:20}]}>
         <Text
           style={[styles.headerText, {color: layout_setting?.h2_text_color}]}>
           {StringsOfLanguages.Categories}
         </Text>
-      </View>
-
-      <ScrollView
-        style={styles.scrollViewStyle}
-        contentContainerStyle={styles.scrollViewContentStyle}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
-        <View style={styles.bannersContainer}>
-          <FastImage
-            source={{
-              uri: baseURL + '/restaurant_data/' + banners[0]?.image,
-            }}
-            style={styles.bannerLeft}
-            resizeMode="cover"
-          />
-          <View style={styles.bannerLeft}>
-            <FastImage
-              source={{uri: baseURL + '/restaurant_data/' + banners[1]?.image}}
-              style={styles.bannerRight}
-              resizeMode="cover"
-            />
-            <FastImage
-              source={{uri: baseURL + '/restaurant_data/' + banners[2]?.image}}
-              style={styles.bannerRight}
-              resizeMode="cover"
-            />
-          </View>
-        </View>
-        <View style={{alignSelf: 'flex-end', marginRight: 10}}>
+        <View>
           <LanguageDropDown
             onPress={() => {
               setIsLoading(true);
@@ -179,6 +158,37 @@ const Categories = ({navigation}) => {
             }}
           />
         </View>
+      </View>
+
+      <ScrollView
+        style={styles.scrollViewStyle}
+        contentContainerStyle={styles.scrollViewContentStyle}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => {onRefresh()}} />
+        }>
+        <View style={[styles.bannersContainer,{padding:10}]}>
+          <FastImage
+            source={{
+              uri: baseURL + '/restaurant_data/' + banners[0]?.image,
+            }}
+            style={styles.bannerLeft}
+            resizeMode="stretch"
+          />
+          <View style={styles.bannerLeft}>
+            <FastImage
+              source={{uri: baseURL + '/restaurant_data/' + banners[1]?.image}}
+              style={styles.bannerRight}
+              resizeMode="stretch"
+            />
+            <FastImage
+              source={{uri: baseURL + '/restaurant_data/' + banners[2]?.image}}
+              style={styles.bannerRight}
+              resizeMode="stretch"
+            />
+          </View>
+        </View>
+       
 
         <View style={styles.categoryHeader}>
           <Text

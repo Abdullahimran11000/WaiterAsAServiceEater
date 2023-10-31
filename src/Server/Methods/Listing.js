@@ -6,6 +6,9 @@ export const GetLocationCategories = id =>
 export const GetLocationTables = id =>
   getRequest(`admin/${id}/tables/tableStatus`);
 
+export const GetTables = location_id =>
+  getRequest(`admin/${location_id}/floors`);
+
 export const GetSurveyQuestionList = id =>
   getRequest(`/survey/${id}/survey_questions_list`);
 

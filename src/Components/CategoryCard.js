@@ -2,10 +2,14 @@ import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Colors from '../Assets/Colors';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const CategoryCard = ({baseURL, item, onPress}) => {
+  const {isLandscape} = useOrientation();
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.container, {width: isLandscape ? '14%' : '20%'}]}>
       <View style={styles.imageContainer}>
         <FastImage
           style={styles.image}
@@ -23,7 +27,7 @@ export default CategoryCard;
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 7,
-    width: '20%',
+
     marginVertical: 10,
     alignItems: 'center',
   },

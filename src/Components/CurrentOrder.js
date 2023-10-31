@@ -22,8 +22,10 @@ import {getTablesList} from '../Regex/SessionCheck';
 import {PlaceOrder} from '../Server/Methods/Listing';
 import {SocketContext} from '../Context/SocketContext';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const CurrentOrder = ({route, handleBackPress}) => {
+  const {isLandscape} = useOrientation();
   const baseURL = route?.params?.baseURL;
 
   const dispatch = useDispatch();
@@ -568,7 +570,8 @@ const CurrentOrder = ({route, handleBackPress}) => {
       <View style={styles.horizotalLine} />
 
       <View style={styles.statsWrapper}>
-        <View style={styles.statContainer}>
+        <View
+          style={[styles.statContainer, {marginBottom: isLandscape ? 10 : 0}]}>
           <Text style={styles.productPriceText}>
             {StringsOfLanguages.Subtotal}
           </Text>
@@ -586,7 +589,10 @@ const CurrentOrder = ({route, handleBackPress}) => {
 
         <Pressable
           disabled={cartData.length == 0 ? true : false}
-          style={[styles.checkoutButtonContainer, {backgroundColor: basecolor}]}
+          style={[
+            styles.checkoutButtonContainer,
+            {backgroundColor: basecolor, width: isLandscape ? '30%' : '90%'},
+          ]}
           onPress={handlePlaceOrder}>
           <Text style={styles.checkoutText}>
             {StringsOfLanguages.Place_Order}
@@ -692,7 +698,7 @@ const styles = StyleSheet.create({
 
   checkoutButtonContainer: {
     padding: 10,
-    width: '90%',
+
     borderRadius: 50,
     alignSelf: 'center',
     alignItems: 'center',

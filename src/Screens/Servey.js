@@ -22,6 +22,7 @@ import {SocketContext} from '../Context/SocketContext';
 import StarRating from 'react-native-star-rating';
 import {GetSurveyQuestionList} from '../Server/Methods/Listing';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const Servey = () => {
   const {session} = useSelector(store => store.sessionReducer);
@@ -223,6 +224,8 @@ const Servey = () => {
     setQuestionList(copyArr);
   };
 
+  const {isLandscape} = useOrientation();
+
   return isLoading ? (
     <View style={styles.loadingContainer}>
       <ActivityIndicator size={'large'} color={Colors.primary} />
@@ -235,14 +238,14 @@ const Servey = () => {
           <Text style={styles.headerText}>{StringsOfLanguages.Survey}</Text>
         </View>
         <ScrollView
-          style={styles.serveyContainer}
+          style={[styles.serveyContainer, {width: isLandscape ? '50%' : '90%'}]}
           showsVerticalScrollIndicator={false}>
           {questionList.map((quest, index) => (
-            <View key={index} style={styles.question}>
+            <View key={index} style={[styles.question]}>
               <Text style={styles.questionText}>{quest.question}</Text>
               {quest.type == 'Questionnaire' && (
                 <TextInput
-                  style={styles.textInput}
+                  style={[styles.textInput]}
                   placeholder="Anwer"
                   numberOfLines={2}
                   multiline
@@ -278,7 +281,8 @@ const Servey = () => {
             style={[
               styles.startSessionButton,
               {
-                paddingVertical: '2%',
+                paddingVertical: isLandscape ? '1%' : '2%',
+                width: isLandscape ? '30%' : '90%',
               },
             ]}
             onPress={handleSubmitResponse}>
@@ -326,7 +330,6 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   serveyContainer: {
-    width: Dimensions.get('window').width - 60,
     alignSelf: 'center',
     marginBottom: 20,
   },

@@ -5,17 +5,21 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 
 import Colors from '../Assets/Colors';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
 import LanguageDropDown from '../Components/LanguageDropDown';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const Terms = ({navigation}) => {
   const {user} = useSelector(store => store.sessionReducer);
   const {terms_and_conditions} = user.assignedLocations[0].Location;
   const {layout_setting} = user;
+
+  const {isLandscape} = useOrientation();
 
   const bgStyle = {
     backgroundColor: layout_setting?.basecolor,
@@ -32,7 +36,11 @@ const Terms = ({navigation}) => {
       <Text style={styles.termsText}>{terms_and_conditions}</Text>
 
       <TouchableOpacity
-        style={[styles.acceptBtn, bgStyle]}
+        style={[
+          styles.acceptBtn,
+          bgStyle,
+          {width: isLandscape ? '30%' : '90%'},
+        ]}
         onPress={acceptTerms}>
         <Text style={styles.acceptBtnText}>{StringsOfLanguages.Accept}</Text>
       </TouchableOpacity>
@@ -67,7 +75,6 @@ const styles = StyleSheet.create({
   },
 
   acceptBtn: {
-    width: '90%',
     borderRadius: 50,
     marginVertical: 10,
     paddingVertical: 10,

@@ -16,13 +16,16 @@ import {getTablesList} from '../Regex/SessionCheck';
 import {SocketContext} from '../Context/SocketContext';
 import {paymentRequest} from '../Server/Methods/Listing';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const OrdersHistory = ({navigation}) => {
+  const {isLandscape} = useOrientation();
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
 
   const {session, user} = useSelector(store => store.sessionReducer);
   const {orders, sessionTotal} = useSelector(store => store.totalReducer);
+  const {newOrderTime} = useSelector(store => store.timerReducer);
 
   const {layout_setting} = user;
   const basecolor = layout_setting?.basecolor;
@@ -55,23 +58,30 @@ const OrdersHistory = ({navigation}) => {
             socket.emit('Payment_request', data?.Notification?.not_id);
 
             if (status == 200 || status == 201) {
-              let myTimeout = data?.api_delay_time * 1000;
-
+              if(newOrderTime !== 0){
+              let myTimeout = 0 * 1000;
+              // console.log('time outtttttttttttttttttttttttttttttttttttt',myTimeout)
+              console.log('if block')
               setIsLoading(false);
-              setFlag(true);
+              // setFlag(true);
 
-              if (
-                data?.Notification?.session_id == session.session_id &&
-                data?.message.includes('customer')
-              ) {
-                showMessage({
-                  message: data.message,
-                  type: 'warning',
-                });
-
-                setTimeout(() => {
-                  setFlag(false);
-                }, myTimeout);
+                if (
+                  data?.Notification?.session_id == session.session_id &&
+                  data?.message.includes('customer')
+                ) {
+                  showMessage({
+                    message: data.message,
+                    type: 'warning',
+                  });
+  
+                  
+                  console.log('inneerr ifffffffff block')
+  
+                  setTimeout(() => {
+                    setFlag(false);
+                  }, myTimeout);
+              }
+              
               } else if (data?.message.includes('Notification')) {
                 setFlag(false);
                 clearTimeout(myTimeout);
@@ -81,9 +91,9 @@ const OrdersHistory = ({navigation}) => {
                     message: data.message,
                     type: 'success',
                   });
-
+                  console.log('innerr else ifffffffff block')
                   navigation.navigate('Servey');
-                }, 300);
+                }, 3000);
               }
             }
           })
@@ -156,7 +166,7 @@ const OrdersHistory = ({navigation}) => {
                         {item.itemDescription}
                       </Text>
 
-                      {item.itemSpecial != '' && (
+                      {item.itemSpecial !== '' && (
                         <Text style={styles.productDescription}>
                           {item.itemSpecial}
                         </Text>
@@ -174,7 +184,11 @@ const OrdersHistory = ({navigation}) => {
         })}
       </ScrollView>
 
-      <View style={styles.bottomButtonWrapper}>
+      <View
+        style={[
+          styles.bottomButtonWrapper,
+          {width: isLandscape ? '30%' : '90%', alignSelf: 'center'},
+        ]}>
         <Pressable
           disabled={orders.length == 0 || flag ? true : false}
           style={[
@@ -243,5 +257,5 @@ const styles = StyleSheet.create({
   scrollViewStyle: {flex: 0.9},
   orderItemContainer: {flex: 0.95},
   scrollViewContentStyle: {flexGrow: 1},
-  bottomButtonWrapper: {flex: 0.1, justifyContent: 'center'},
+  bottomButtonWrapper: {justifyContent: 'center'},
 });

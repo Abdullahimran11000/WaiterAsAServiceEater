@@ -17,8 +17,11 @@ import {GetLocationCategories} from '../Server/Methods/Listing';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {deflate, inflate} from 'react-native-gzip';
+import {useOrientation} from '../hooks/useOrientaion';
+import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const Popup = ({handlePopClose}) => {
+  const {isLandscape} = useOrientation();
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {cloudIp} = useSelector(store => store.sessionReducer);
@@ -107,7 +110,11 @@ const Popup = ({handlePopClose}) => {
   // };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {top: isLandscape ? WINDOW_HEIGHT / 8 : WINDOW_HEIGHT / 3},
+      ]}>
       <Text style={styles.headingText}>{popupData?.data?.title}</Text>
       <Text style={styles.descriptionText}>{popupData?.data?.body}</Text>
 
@@ -147,7 +154,7 @@ const Popup = ({handlePopClose}) => {
                             paddingHorizontal: 10,
                           }}>
                           <Text style={{color: Colors.black, padding: 6}}>
-                            Go to Details
+                            {StringsOfLanguages.Go_to_Details}
                           </Text>
                         </TouchableOpacity>
                       </>
@@ -188,7 +195,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: Colors.primary,
     zIndex: 1,
-    top: WINDOW_HEIGHT / 3,
   },
 
   headingText: {

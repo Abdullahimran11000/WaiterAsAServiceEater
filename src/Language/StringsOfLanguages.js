@@ -34,6 +34,9 @@ const StringsOfLanguages = new LocalizedStrings({
     Welcome_Text: 'Welcome Text',
     Accept: 'Accept',
     NUTRI_SCORE: 'NUTRI-SCORE',
+    Floor: 'Floor',
+    Select_Floor: 'Select Floor',
+    Go_to_Details: ' Go to Details',
   },
   fr: {
     SELECT_A_CATEGORY: 'CHOISIR UNE CATÉGORIE',
@@ -68,6 +71,9 @@ const StringsOfLanguages = new LocalizedStrings({
     Welcome_Text: 'Texte de bienvenue',
     Accept: 'Accepter',
     NUTRI_SCORE: 'NUTRI-SCORE',
+    Floor: 'Sol',
+    Select_Floor: "Sélectionnez l'étage",
+    Go_to_Details: 'Aller aux détails',
   },
   du: {
     SELECT_A_CATEGORY: 'KIES EEN CATEGORIE',
@@ -102,6 +108,9 @@ const StringsOfLanguages = new LocalizedStrings({
     Welcome_Text: 'Welkomsttekst',
     Accept: 'Aanvaarden',
     NUTRI_SCORE: 'NUTRI-SCORE',
+    Floor: 'Vloer',
+    Select_Floor: 'Selecteer Verdieping',
+    Go_to_Details: 'Ga naar Details',
   },
 });
 

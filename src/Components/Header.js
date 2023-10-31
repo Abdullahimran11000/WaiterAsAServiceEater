@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Text,
   View,
@@ -8,6 +8,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Animated,
+  Easing,
 } from 'react-native';
 
 import {useSelector, useDispatch} from 'react-redux';
@@ -23,7 +25,18 @@ import StringsOfLanguages from '../Language/StringsOfLanguages';
 
 const Header = props => {
   const dispatch = useDispatch();
-  const {baseURL, socket, navigation, name, viewFlag, setViewFlag} = props;
+  const {
+    baseURL,
+    socket,
+    navigation,
+    name,
+    viewFlag,
+    setViewFlag,
+    animation,
+    setAnimation,
+  } = props;
+
+  console.log('aaaaa', animation);
 
   const {user, session} = useSelector(store => store.sessionReducer);
   const {newOrderTime} = useSelector(store => store.timerReducer);
@@ -80,7 +93,8 @@ const Header = props => {
     if (viewFlag) {
       setViewFlag(false);
     } else {
-      navigation.goBack();
+      console.log('REPLACED *******************')
+      navigation.goBack('');
     }
   };
 
@@ -213,6 +227,72 @@ const Header = props => {
     });
   };
 
+  const shakeAnimationValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (animation === true) {
+      ShakeAnimation();
+    }
+    setAnimation(false);
+  }, [animation]);
+
+  const ShakeAnimation = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnimationValue, {
+        toValue: 10,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationValue, {
+        toValue: -10,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationValue, {
+        toValue: 10,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationValue, {
+        toValue: -10,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationValue, {
+        toValue: 10,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationValue, {
+        toValue: -10,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationValue, {
+        toValue: 10,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationValue, {
+        toValue: 0,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const animatedStyle = {
+    transform: [{translateX: shakeAnimationValue}],
+  };
+
   return (
     <View style={[styles.topContainer, bgStyle]}>
       <TouchableOpacity style={styles.backBtn} onPress={handleClosePress}>
@@ -299,20 +379,21 @@ const Header = props => {
             </Text>
           )}
         </Pressable>
+        <Animated.View style={[animatedStyle]}>
+          <TouchableOpacity
+            style={styles.cartBtnContainer}
+            onPressIn={handleCartPress}>
+            {count > 0 && (
+              <View style={styles.cartCounterView}>
+                <Text style={styles.cartCounter}>{count}</Text>
+              </View>
+            )}
 
-        <TouchableOpacity
-          style={styles.cartBtnContainer}
-          onPressIn={handleCartPress}>
-          {count > 0 && (
-            <View style={styles.cartCounterView}>
-              <Text style={styles.cartCounter}>{count}</Text>
+            <View style={[styles.cartBtn]}>
+              <Ionicons name="cart" size={30} color={Colors.white} />
             </View>
-          )}
-
-          <View style={styles.cartBtn}>
-            <Ionicons name="cart" size={30} color={Colors.white} />
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </Animated.View>
       </View>
     </View>
   );

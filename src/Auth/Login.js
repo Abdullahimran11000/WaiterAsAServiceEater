@@ -25,10 +25,13 @@ import Colors from '../Assets/Colors';
 import {ROOT_URL} from '../Server/config';
 import {getToken} from '../Utils/PNHelper';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
+import {useOrientation} from '../hooks/useOrientaion';
 
 const iconSize = 30;
 
 const Login = ({navigation}) => {
+  const {isLandscape} = useOrientation();
+  console.log('Orientation isLandscape', isLandscape);
   const dispatch = useDispatch();
   const {cloudIp} = useSelector(store => store.sessionReducer);
 
@@ -149,7 +152,6 @@ const Login = ({navigation}) => {
   const handleUpdateServer = () => {
     const urlRegExp =
       /(?:^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$|(\d+\.\d+.\d+.\d+)):\d{4}$/gm;
-
     if (urlRegExp.test(url)) {
       axios
         .get(`http://${url}/test_connection`)
@@ -209,108 +211,126 @@ const Login = ({navigation}) => {
         />
       </View>
 
-      <View style={styles.bodyContainer}>
-        <View style={styles.emailWrapper}>
-          <Text style={styles.emailHeadingText}>
-            {StringsOfLanguages.Email_Address}
-          </Text>
-          <View style={styles.emailContainer}>
-            <Icon name="email" size={iconSize} color={Colors.primary} />
-            <TextInput
-              value={email}
-              autoCapitalize="none"
-              placeholder="Email Address"
-              style={styles.textInputStyle}
-              textContentType="emailAddress"
-              onChangeText={handleEmailChange}
-            />
-          </View>
-        </View>
-
-        <View style={styles.emailWrapper}>
-          <Text style={styles.emailHeadingText}>
-            {StringsOfLanguages.Password}
-          </Text>
-          <View style={styles.emailContainer}>
-            <Foundation name="key" size={iconSize} color={Colors.primary} />
-            <TextInput
-              value={password}
-              autoCapitalize="none"
-              placeholder="Password"
-              textContentType="newPassword"
-              secureTextEntry={!showPassword}
-              onChangeText={handlePasswordChange}
-              style={[styles.textInputStyle, {width: '86%'}]}
-            />
-            <TouchableOpacity onPress={handleEyePress}>
-              {!showPassword ? (
-                <Entypo name="eye" size={iconSize} color={Colors.primary} />
-              ) : (
-                <Entypo
-                  name="eye-with-line"
-                  size={iconSize}
-                  color={Colors.primary}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.loginBtn} onPress={handleLoginPress}>
-          <Text style={styles.loginBtnText}>{StringsOfLanguages.Sign_In}</Text>
-        </TouchableOpacity>
-
-        {ROOT_URL && cloudIp == '' ? (
-          <>
-            <Text
-              style={{
-                color: Colors.primary,
-                marginVertical: 25,
-                fontWeight: 'bold',
-              }}>
-              {StringsOfLanguages.Cloud_Server}
+      <View
+        style={[
+          styles.bodyContainer,
+          {
+            flex: isLandscape ? 0.8 : 0.6,
+            flexDirection: isLandscape ? 'row' : 'column',
+            justifyContent: isLandscape ? 'space-around' : 'center',
+          },
+        ]}>
+        <View style={{width: isLandscape ? '40%' : '70%'}}>
+          <View style={[styles.emailWrapper]}>
+            <Text style={styles.emailHeadingText}>
+              {StringsOfLanguages.Email_Address}
             </Text>
-            <TouchableOpacity
-              style={{
-                width: '40%',
-                borderRadius: 20,
-                paddingVertical: 10,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: Colors.red,
-              }}
-              onPress={() => setModalVisible(true)}>
-              <Text style={{fontSize: 16, color: Colors.white}}>
-                {StringsOfLanguages.Update_Server}
-              </Text>
-            </TouchableOpacity>
-          </>
-        ) : cloudIp != '' ? (
-          <>
-            <Text
-              style={{
-                color: Colors.primary,
-                marginVertical: 25,
-                fontWeight: 'bold',
-              }}>
-              {StringsOfLanguages.Local_Server}
+            <View style={styles.emailContainer}>
+              <Icon name="email" size={iconSize} color={Colors.primary} />
+              <TextInput
+                value={email}
+                autoCapitalize="none"
+                placeholder="Email Address"
+                style={styles.textInputStyle}
+                textContentType="emailAddress"
+                onChangeText={handleEmailChange}
+              />
+            </View>
+          </View>
+
+          <View style={[styles.emailWrapper]}>
+            <Text style={styles.emailHeadingText}>
+              {StringsOfLanguages.Password}
             </Text>
-            <TouchableOpacity
-              style={{
-                width: '40%',
-                borderRadius: 20,
-                paddingVertical: 10,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: Colors.red,
-              }}
-              onPress={() => setModalVisible(true)}>
-              <Text style={{fontSize: 16, color: Colors.white}}>
-                {StringsOfLanguages.Update_Server}
+
+            <View style={styles.emailContainer}>
+              <Foundation name="key" size={iconSize} color={Colors.primary} />
+              <TextInput
+                value={password}
+                autoCapitalize="none"
+                placeholder="Password"
+                textContentType="newPassword"
+                secureTextEntry={!showPassword}
+                onChangeText={handlePasswordChange}
+                style={[styles.textInputStyle, {width: '86%'}]}
+              />
+              <TouchableOpacity onPress={handleEyePress}>
+                {!showPassword ? (
+                  <Entypo name="eye" size={iconSize} color={Colors.primary} />
+                ) : (
+                  <Entypo
+                    name="eye-with-line"
+                    size={iconSize}
+                    color={Colors.primary}
+                  />
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.loginBtn]}
+            onPress={handleLoginPress}>
+            <Text style={styles.loginBtnText}>
+              {StringsOfLanguages.Sign_In}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{width: isLandscape ? '40%' : '50%'}}>
+          {ROOT_URL && cloudIp == '' ? (
+            <>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: Colors.primary,
+                  marginVertical: 25,
+                  fontWeight: 'bold',
+                }}>
+                {StringsOfLanguages.Cloud_Server}
               </Text>
-            </TouchableOpacity>
-          </>
-        ) : null}
+              <TouchableOpacity
+                style={{
+                  // width: '40%',
+                  borderRadius: 20,
+                  paddingVertical: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: Colors.red,
+                }}
+                onPress={() => setModalVisible(true)}>
+                <Text style={{fontSize: 16, color: Colors.white}}>
+                  {StringsOfLanguages.Update_Server}
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : cloudIp != '' ? (
+            <>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: Colors.primary,
+                  marginVertical: 25,
+                  fontWeight: 'bold',
+                }}>
+                {StringsOfLanguages.Local_Server}
+              </Text>
+              <TouchableOpacity
+                style={{
+                  // width: '40%',
+                  borderRadius: 20,
+                  paddingVertical: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: Colors.red,
+                }}
+                onPress={() => setModalVisible(true)}>
+                <Text style={{fontSize: 16, color: Colors.white}}>
+                  {StringsOfLanguages.Update_Server}
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : null}
+        </View>
       </View>
 
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
@@ -384,12 +404,11 @@ const styles = StyleSheet.create({
   },
 
   bodyContainer: {
-    flex: 0.6,
     alignItems: 'center',
   },
 
   emailWrapper: {
-    width: '70%',
+    width: '100%',
     marginVertical: 20,
   },
 
@@ -415,7 +434,6 @@ const styles = StyleSheet.create({
   },
 
   loginBtn: {
-    width: '70%',
     marginTop: 40,
     borderRadius: 20,
     paddingVertical: 10,
