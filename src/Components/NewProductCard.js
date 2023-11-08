@@ -116,19 +116,19 @@ export default NewProductCard;
 const styles = StyleSheet.create({
   container: {
     height: 190,
-
-    borderRadius: 1,
+    borderRadius:10,
+    // borderRadius: 1,
     marginVertical: 6,
     overflow: 'hidden',
   },
   containerHighlighted: {
     height: 190,
-
-    borderRadius: 1,
+    borderRadius:10,
+    // borderRadius: 1,
     marginVertical: 6,
     overflow: 'hidden',
-    borderColor: Colors.green,
-    borderWidth: 3,
+    // borderColor: Colors.green,
+    // borderWidth: 3,
   },
   overlay: {
     position: 'absolute',

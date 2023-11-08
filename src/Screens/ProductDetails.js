@@ -116,7 +116,7 @@ const ProductDetails = ({
       for (var i = 0; i < MenuItemRecommendations?.length; i++) {
         for (var a = 0; a < mainCategories?.length; a++) {
           if (
-            MenuItemRecommendations[i].Menu.menu_category_id ==
+            MenuItemRecommendations[i]?.Menu?.menu_category_id ==
             mainCategories[a].category_id
           ) {
             for (var b = 0; b < mainCategories[a].Menus?.length; b++) {
@@ -1294,7 +1294,7 @@ const styles = StyleSheet.create({
     flex: WINDOW_WIDTH < 420 ? 0.7 : 0.8,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.primary,
+    // backgroundColor: Colors.primary,
     borderRadius: 10,
     padding: 10,
   },
