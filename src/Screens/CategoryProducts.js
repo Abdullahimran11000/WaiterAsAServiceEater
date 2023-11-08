@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
 
   cartBtnContainer: {
     marginRight: 10,
-    backgroundColor: Colors.green,
+    backgroundColor: Colors.red,
     paddingHorizontal: 12,
     paddingVertical: 2,
     borderRadius: 6,
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
 
-  body: {flex: 1, paddingHorizontal: 0},
+  body: {flex: 1, paddingHorizontal: 10},
 
   noResultBody: {
     height: '100%',
@@ -515,6 +515,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: 1,
+
   },
 
   productDetailsContainer: {
@@ -527,6 +529,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     justifyContent: 'space-between',
+    
   },
 
   imageContainer: {
@@ -537,14 +540,15 @@ const styles = StyleSheet.create({
   productImage: {
     width: '100%',
     height: '100%',
-    marginRight: 10,
-    borderRadius: 10,
+    // marginRight: 10,
+    // borderRadius: 10,
   },
 
   descriptionContainer: {
     width: '72%',
     height: '100%',
     justifyContent: 'center',
+    
   },
 
   descriptionTitle: {

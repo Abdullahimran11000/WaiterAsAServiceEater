@@ -16,7 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {WINDOW_WIDTH} from '../Utils/Size';
 
 const LanguageDropDown = props => {
-  const [language, setLanguage] = useState('');
+  const [language, setLanguage] = useState('English');
 
   const storeData = async item => {
     try {

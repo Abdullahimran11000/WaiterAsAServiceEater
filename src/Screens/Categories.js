@@ -255,6 +255,7 @@ const styles = StyleSheet.create({
     width: '49.5%',
     height: '100%',
     justifyContent: 'space-between',
+    borderRadius:10
   },
 
   bannerRight: {
