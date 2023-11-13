@@ -28,7 +28,7 @@ const LanguageDropDown = props => {
 
   const setIcon = () => {
     return (
-      <View style={{left: 8, alignItems: 'center', justifyContent: 'center'}}>
+      <View style={{left: 6, alignItems: 'center', justifyContent: 'center'}}>
         <Icon name={'flag-variant'} size={40} color={Colors.white} />
       </View>
     );
@@ -62,7 +62,7 @@ const LanguageDropDown = props => {
         rowTextForSelection={(item, index) => {
           return item.longform;
         }}
-        // defaultValue={'ENGLISH'}
+        defaultValue={'ENGLISH'}
         defaultButtonText={
           <Text style={{color: Colors.white}}>{language}</Text>
         }

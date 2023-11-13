@@ -824,7 +824,10 @@ const ProductDetails = ({
         style={{flex: 0.93}}
         contentContainerStyle={{flexGrow: 1}}
         showsVerticalScrollIndicator={false}>
-        <View style={styles.productInfoContainer}>
+        <View style={[styles.productInfoContainer,{
+          
+          borderRadius:10
+        }]}>
           <View>
             {MenuMedia?.length == 0 ? (
               <View style={styles.productImageContainer}>
@@ -839,8 +842,9 @@ const ProductDetails = ({
                 <Swiper
                   removeClippedSubviews={false}
                   autoplayTimeout={3.5}
-                  style={{height: WINDOW_WIDTH < 420 ? 125 : 220}}
+                  style={{height: WINDOW_WIDTH < 420 ? 125 : 220,borderRadius:10,overflow:'hidden'}}
                   showsButtons={true}
+                  
                   showsPagination={false}
                   autoplay={true}
                   nextButton={
@@ -858,7 +862,7 @@ const ProductDetails = ({
                             uri:
                               baseURL + '/restaurant_data/' + item.menu_photo,
                           }}
-                          style={styles.productImage}
+                          style={[styles.productImage]}
                           resizeMode="stretch"
                         />
                       </View>
@@ -1158,12 +1162,16 @@ const styles = StyleSheet.create({
   productImageContainer: {
     flex: 1,
     alignItems: 'center',
+    borderRadius:10,
+    overflow:'hidden'
   },
 
   productImage: {
-    width: '100%',
+    // width:WINDOW_WIDTH*1,
+    width:'100%',
     height: WINDOW_WIDTH < 420 ? 125 : 220,
 
+    
     // width: WINDOW_WIDTH < 420 ? 125 : 150,
     // height: WINDOW_WIDTH < 420 ? 125 : 150,
     // borderRadius: 75,
