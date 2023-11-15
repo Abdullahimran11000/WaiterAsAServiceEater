@@ -16,6 +16,7 @@ export const getTablesList = (location, table, callback) => {
   try {
     GetLocationTables(location)
       .then(res => {
+        console.log('tableeeeeeeeeeeeeeeeeeee',res)
         const {status, data} = res;
         if (status == 200 || status == 201) {
           let isRunning = data.Tables.find(

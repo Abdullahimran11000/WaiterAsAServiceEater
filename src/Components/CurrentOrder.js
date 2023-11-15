@@ -471,6 +471,10 @@ const CurrentOrder = ({route, handleBackPress}) => {
               dispatch({
                 type: 'END_SESSION',
               });
+
+              dispatch({
+                type: 'RESET_SESSION_TOTAL'
+              })
             },
           },
         ]);
