@@ -53,17 +53,19 @@ const OrdersHistory = ({navigation}) => {
 
         paymentRequest(formData)
           .then(res => {
+            console.log('resssssssssssssssssssss',res)
             const {status, data} = res;
 
             socket.emit('Payment_request', data?.Notification?.not_id);
 
             if (status == 200 || status == 201) {
-              if(newOrderTime !== 0){
-              let myTimeout = 0 * 1000;
+              // if(newOrderTime !== 0){
+
+              let myTimeout =  data?.api_delay_time * 1000;
               // console.log('time outtttttttttttttttttttttttttttttttttttt',myTimeout)
               console.log('if block')
               setIsLoading(false);
-              // setFlag(true);
+              setFlag(true);
 
                 if (
                   data?.Notification?.session_id == session.session_id &&
@@ -79,8 +81,9 @@ const OrdersHistory = ({navigation}) => {
   
                   setTimeout(() => {
                     setFlag(false);
+                    console.log('&&&&&&&&&&&&&&&&')
                   }, myTimeout);
-              }
+              // }
               
               } else if (data?.message.includes('Notification')) {
                 setFlag(false);
@@ -108,6 +111,7 @@ const OrdersHistory = ({navigation}) => {
           });
       } else {
         setIsLoading(false);
+        console.log('new session else ')
         Alert.alert('Session Closed', 'Start a new session', [
           {
             text: 'Ok',
