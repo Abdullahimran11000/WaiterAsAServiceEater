@@ -256,10 +256,10 @@ const Login = ({navigation}) => {
               />
               <TouchableOpacity onPress={handleEyePress}>
                 {!showPassword ? (
-                  <Entypo name="eye" size={iconSize} color={Colors.primary} />
+                  <Entypo name="eye-with-line" size={iconSize} color={Colors.primary} />
                 ) : (
                   <Entypo
-                    name="eye-with-line"
+                    name="eye"
                     size={iconSize}
                     color={Colors.primary}
                   />
