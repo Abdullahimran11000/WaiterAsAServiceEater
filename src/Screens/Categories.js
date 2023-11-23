@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
   bannerRight: {
     width: '100%',
     height: '48%',
+    borderRadius:10
   },
 
   categoryHeader: {

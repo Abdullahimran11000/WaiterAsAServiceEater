@@ -16,8 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {WINDOW_WIDTH} from '../Utils/Size';
 
 const LanguageDropDown = props => {
-  const [language, setLanguage] = useState('English');
-
+  const [language, setLanguage] = useState('language');
   const storeData = async item => {
     try {
       await AsyncStorage.setItem('Language', item);
@@ -62,10 +61,10 @@ const LanguageDropDown = props => {
         rowTextForSelection={(item, index) => {
           return item.longform;
         }}
-        defaultValue={'ENGLISH'}
-        defaultButtonText={
-          <Text style={{color: Colors.white}}>{language}</Text>
-        }
+        defaultValue={""}
+        defaultButtonText={language}
+        // defaultButtonText={<Text>{language}</Text>}
+        // searchPlaceHolder=''
         renderDropdownIcon={setIcon}
         rowTextStyle={{fontSize: 14}}
         buttonStyle={{
