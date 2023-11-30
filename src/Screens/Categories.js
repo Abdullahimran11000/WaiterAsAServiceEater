@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState, useCallback, useRef} from 'react';
 import {
   Text,
   View,
@@ -22,6 +22,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
 import {lang} from '../Language/LanguageArray';
 import LanguageDropDown from '../Components/LanguageDropDown';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Swiper from 'react-native-swiper';
+import Carousel from 'react-native-reanimated-carousel';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  useAnimatedScrollHandler,
+  scrollTo,
+  withSpring,
+} from 'react-native-reanimated';
 
 const Categories = ({navigation}) => {
   const {user} = useSelector(store => store.sessionReducer);
@@ -59,7 +69,6 @@ const Categories = ({navigation}) => {
     baseURL === '' ? null : apiCall();
   }, [baseURL]);
 
-
   /**
    * The function makes an API call to retrieve location categories, dish tags, and banners, and sets
    * them as state variables.
@@ -71,7 +80,7 @@ const Categories = ({navigation}) => {
     } else {
       console.log('else block');
       try {
-        setRefreshing(true)
+        setRefreshing(true);
         await GetLocationCategories(location_id)
           .then(res => {
             const {status, data} = res;
@@ -88,13 +97,52 @@ const Categories = ({navigation}) => {
           })
           .finally(() => {
             setIsLoading(false);
-            setBaseUrlFunction()
+            setBaseUrlFunction();
           });
       } catch (error) {
         setIsLoading(false);
         console.log('Get Location Categories error in try-catch ', error);
       }
     }
+  };
+
+  const imagesRender = ({item, index}) => {
+    return (
+      <View style={{flex: 1}}>
+        <FastImage
+          key={index}
+          source={{
+            uri: baseURL + '/restaurant_data/' + item.image,
+          }}
+          style={[styles.bannerLeft]}
+          resizeMode="stretch"
+        />
+      </View>
+    );
+  };
+
+  const carouselRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const getNextIndex = () => (currentIndex + 1) % banners.length;
+  const getPreviousIndex = () =>
+    (currentIndex - 1 + banners.length) % banners.length;
+
+  // This function handle the back item from the banner
+
+  const handlePreviousPress = () => {
+    const previousIndex = getPreviousIndex();
+
+    setCurrentIndex(previousIndex);
+    console.log('previoussssssssss', previousIndex);
+  };
+
+  // This function handle the next item from the banner
+
+  const handleNextPress = () => {
+    const nextIndex = getNextIndex();
+    setCurrentIndex(nextIndex);
+    console.log('nexttttttttttttttt', nextIndex);
   };
 
   /* `const onRefresh` is a function that is created using the `useCallback` hook. It sets the
@@ -104,15 +152,18 @@ const Categories = ({navigation}) => {
   function has no dependencies, so it will only be created once. This can help improve performance
   by reducing unnecessary re-renders. The `onRefresh` function is passed as a prop to the
   `RefreshControl` component in the `ScrollView` to handle the pull-to-refresh functionality. */
+
   
+
+
   useEffect(() => {
-    onRefresh()
+    onRefresh();
   }, []);
 
   const onRefresh = () => {
-    setRefreshing(true)
-    apiCall()
-  }
+    setRefreshing(true);
+    apiCall();
+  };
 
   /**
    * The function handles a category press event and navigates to a screen displaying products within
@@ -143,7 +194,16 @@ const Categories = ({navigation}) => {
     </View>
   ) : (
     <View style={styles.container}>
-      <View style={[styles.headerContainer, bgStyle, {flexDirection: 'row',justifyContent:'space-between',paddingHorizontal:20}]}>
+      <View
+        style={[
+          styles.headerContainer,
+          bgStyle,
+          {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingHorizontal: 20,
+          },
+        ]}>
         <Text
           style={[styles.headerText, {color: layout_setting?.h2_text_color}]}>
           {StringsOfLanguages.Categories}
@@ -165,30 +225,60 @@ const Categories = ({navigation}) => {
         contentContainerStyle={styles.scrollViewContentStyle}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => {onRefresh()}} />
-        }>
-        <View style={[styles.bannersContainer,{padding:10}]}>
-          <FastImage
-            source={{
-              uri: baseURL + '/restaurant_data/' + banners[0]?.image,
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              onRefresh();
             }}
-            style={styles.bannerLeft}
-            resizeMode="stretch"
           />
-          <View style={styles.bannerLeft}>
-            <FastImage
-              source={{uri: baseURL + '/restaurant_data/' + banners[1]?.image}}
-              style={styles.bannerRight}
-              resizeMode="stretch"
+        }>
+        <View style={[styles.bannersContainer, {padding: 10}]}>
+          {banners.length > 0 ? (
+            <Carousel
+              ref={carouselRef}
+              data={banners}
+              loop
+              pagingEnabled={true}
+              autoPlayInterval={1000}
+              renderItem={imagesRender}
+              defaultIndex={currentIndex}
+              width={WINDOW_WIDTH * 0.97}
+              height={WINDOW_HEIGHT * 0.25}
+              autoPlay={true}
+              scrollAnimationDuration={1000}
+              // onSnapToItem={index => setCurrentIndex(index)}
+              onSnapToItem={index => {
+                setCurrentIndex(index);
+              }}
+              snapEnabled={true}
             />
-            <FastImage
-              source={{uri: baseURL + '/restaurant_data/' + banners[2]?.image}}
-              style={styles.bannerRight}
-              resizeMode="stretch"
-            />
-          </View>
+          ) : (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                top:'3%'
+              }}>
+              <Text
+                style={{
+                  fontFamily: 'FreeSansBold',
+                  fontSize: 20,
+                  color: 'black',
+                }}>
+                NO BANNERS TO SHOW{' '}
+              </Text>
+            </View>
+          )}
         </View>
-       
+        {/* <View style={styles.bannerButtons}>
+          <TouchableOpacity onPress={handlePreviousPress}>
+            <AntDesign name="caretleft" size={30} color={'white'} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleNextPress}>
+            <AntDesign name="caretright" size={30} color={'white'} />
+          </TouchableOpacity>
+        </View> */}
 
         <View style={styles.categoryHeader}>
           <Text
@@ -245,30 +335,69 @@ const styles = StyleSheet.create({
   scrollViewContentStyle: {flexGrow: 1},
 
   bannersContainer: {
+    // backgroundColor:"red",
     width: '100%',
     flexDirection: 'row',
     height: WINDOW_HEIGHT * 0.25,
+    // backgroundColor:'red',
     justifyContent: 'space-between',
+    borderRadius: 10,
+    // marginVertical:10,
   },
 
   bannerLeft: {
-    width: '49.5%',
+    // width: '49.5%',
     height: '100%',
     justifyContent: 'space-between',
-    borderRadius:10
+    width: WINDOW_WIDTH * 0.96,
+    alignSelf: 'center',
+    borderRadius: 10,
   },
 
-  bannerRight: {
-    width: '100%',
-    height: '48%',
-    borderRadius:10
+  bannerButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    position: 'absolute',
+    top: '14%',
+    width: WINDOW_WIDTH * 0.9,
+    alignSelf: 'center',
   },
-
   categoryHeader: {
     width: '100%',
     alignItems: 'center',
     height: WINDOW_HEIGHT * 0.08,
     justifyContent: 'center',
+  },
+  wrapper: {
+    // width:'100%',
+    // marginHorizontal:10,
+    height: '100%',
+    alignSelf: 'center',
+  },
+  slide1: {
+    height: WINDOW_HEIGHT * 0.3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  slide2: {
+    height: WINDOW_HEIGHT * 0.3,
+
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#97CAE5',
+  },
+  slide3: {
+    height: WINDOW_HEIGHT * 0.3,
+
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#92BBD9',
+  },
+  text: {
+    color: '#fff',
+    fontSize: 30,
+    fontWeight: 'bold',
   },
 
   categoryHeaderText: {

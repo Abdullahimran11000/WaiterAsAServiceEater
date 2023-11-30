@@ -327,6 +327,7 @@ const CategoryProducts = ({navigation, route}) => {
                     </Text>
 
                     <View style={styles.productDetailsWrapper}>
+                      
                       {currentCategory.Menus.map((product, index) => {
                         let priceWithTax =
                           product.menu_price +
@@ -485,13 +486,13 @@ const styles = StyleSheet.create({
   body: {flex: 1, paddingHorizontal: 10},
 
   noResultBody: {
-    height: '100%',
+    height: '80%',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     justifyContent: 'center',
   },
 
-  noResultBodyText: {fontSize: 22, color: Colors.black},
+  noResultBodyText: {fontSize: 23,fontFamily:'FreeSansBold', color: Colors.black},
 
   searchDataWrapper: {
     flexWrap: 'wrap',
