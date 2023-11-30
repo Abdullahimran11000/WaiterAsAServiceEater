@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
+  Image,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 
@@ -13,6 +14,7 @@ import Colors from '../Assets/Colors';
 import StringsOfLanguages from '../Language/StringsOfLanguages';
 import LanguageDropDown from '../Components/LanguageDropDown';
 import {useOrientation} from '../hooks/useOrientaion';
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from '../Utils/Size';
 
 const Terms = ({navigation}) => {
   const {user} = useSelector(store => store.sessionReducer);

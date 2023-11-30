@@ -98,16 +98,27 @@ const OrdersHistory = ({navigation}) => {
                   navigation.navigate('Servey');
                 }, 3000);
               }
+              else if( status == 401 ) {
+                setTimeout(() => {
+                  showMessage({
+                    message: 'Another user already Logged-In',
+                    type: 'unauthorized',
+                  });
+                  console.log('innerr else ifffffffff innnnnerr else block')
+                }, 3000);
+                navigation.replace('Login');
+              }
             }
           })
           .catch(error => {
             setIsLoading(false);
-            console.log('payment api error ', error);
+            console.log('payment api er ', error);
 
             showMessage({
               message: 'Could not complete payment',
               type: 'warning',
             });
+            
           });
       } else {
         setIsLoading(false);

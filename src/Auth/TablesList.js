@@ -24,8 +24,10 @@ import {
 import StringsOfLanguages from '../Language/StringsOfLanguages';
 import {useOrientation} from '../hooks/useOrientaion';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../Utils/Size';
+import { useNavigation } from '@react-navigation/native';
 
 const TablesList = () => {
+  const navigation = useNavigation();
   const {isLandscape} = useOrientation();
   const dispatch = useDispatch();
   const {user} = useSelector(store => store.sessionReducer);
@@ -110,6 +112,7 @@ const TablesList = () => {
     } catch (error) {
       setIsLoading(false);
       console.log('GetLocationTablesError: ', error);
+      navigation.replace('Login')
     }
   };
 
@@ -157,10 +160,15 @@ const TablesList = () => {
             });
           } else {
             setIsLoading(false);
-            showMessage({
-              message: 'Could not start session',
-              type: 'warning',
-            });
+            setTimeout(() => {
+              showMessage({
+                message: 'Could not start session',
+                type: 'warning',
+              });
+            }, 2000);
+            
+            console.log('start session ifffffffffffffffffffffffff')
+            navigation.replace('Login')
           }
         })
         .catch(error => {
@@ -171,6 +179,8 @@ const TablesList = () => {
             message: 'Could not start session',
             type: 'warning',
           });
+          console.log('session api errorrrrrrrrrrrrrrrrrrrrrrrrr catch')
+          navigation.replace('Login')
         });
     } catch (error) {
       setIsLoading(false);
@@ -180,6 +190,9 @@ const TablesList = () => {
         message: 'Could not start session',
         type: 'warning',
       });
+      console.log('session start errorrrrrrrrrrrrrrrrrrrrrr')
+      navigation.navigate('Login')
+      
     }
   };
 
